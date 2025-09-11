@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kodo -心臓博物館- - サポート</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #343a3f;
+    }
+    header {
+      background: linear-gradient(135deg, #a29bfe, #81ecec);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin: 0;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    header p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      margin-top: 10px;
+      font-weight: 300;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .section {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+    }
+    .section h2 {
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 10px;
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+    .media-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      text-align: center;
+    }
+    .media-card img {
+      max-width: 200px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .btn {
+      text-decoration: none;
+      color: #fff;
+      background-color: #007bff;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .screenshot {
+        width: 100%;
+        max-width: 300px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .screenshots-group {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        margin-top: 25px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    @media (min-width: 768px) {
+      .media-card {
+        flex-direction: row;
+        text-align: left;
+      }
+      .media-card.reverse {
+        flex-direction: row-reverse;
+        text-align: right;
+      }
+      .media-card img {
+        margin: 0;
+      }
+      .screenshots-group {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Kodo -心臓博物館-</h1>
+    <p>心臓の解剖を体験できる学習アプリ</p>
+  </header>
+
+  <main class="container">
+
+    <section class="section">
+      <h2>アプリについて</h2>
+      <div class="media-card">
+        <img src="../image/icon/kodo.png" alt="アプリのアイコン" />
+        <div>
+          <p>「Kodo -心臓博物館-」は、いろんな生き物の心拍数を目で見て肌で感じられるアプリです</p>
+          <p>iPhoneの振動で生き物の生きているスピードの違いを実感することができます、あなたの心臓に手を当ててどれくらい違うか比べてみても良いかもしれません</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>アプリの機能</h2>
+      <p>心臓の動くスピードを目と触覚で体感することができます</p>
+      <div class="screenshots-group">
+        <img src="../image/kodo/1.webp" alt="アプリ画面2” class="screenshot" />
+        <img src="../image/kodo/2.webp" alt="アプリ画面3” class="screenshot" />
+      </div>
+    </section>
+    
+    <section class="section">
+      <h2>お問い合わせ</h2>
+      <p>アプリに関するご意見・ご要望、不具合のご報告など、お気軽にお問い合わせください。</p>
+      <div class="btn-group">
+        <a href="https://twitter.com/messages/compose?recipient_id=u11238123" target="_blank" rel="noopener" class="btn">TwitterのDMでお問い合わせ</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>プライバシーポリシー</h2>
+      <p>「Kodo -心臓博物館-」は、ユーザーのプライバシーを尊重します。</p>
+      <p>本アプリは、個人を特定できる情報を一切収集しません。詳細については、以下をご確認ください。</p>
+      <div class="btn-group">
+        <a href="privacy.html" class="btn">プライバシーポリシーを読む</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Harumi Sagawa — Apps</p>
+    <p>
+        <a href="index.html">トップページに戻る</a>
+    </p>
+  </footer>
+
+</body>
+</html>
