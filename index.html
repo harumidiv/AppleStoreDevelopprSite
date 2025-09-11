@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Harumi Sagawa — Apps</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Hiragino Kaku Gothic ProN',Arial;line-height:1.45;margin:0;background:#f6f7fb;color:#0b1220}
+    header{background:linear-gradient(90deg,#6c5ce7,#00b4d8);color:#fff;padding:36px 20px;text-align:center}
+    header h1{margin:0;font-size:clamp(20px,4vw,32px)}
+    header p{margin:8px 0 0;opacity:.95}
+
+    .container{max-width:1100px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+
+    .card{background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(11,18,32,0.06);overflow:hidden;display:flex;flex-direction:column;min-height:260px;transition:transform .18s ease,box-shadow .18s ease}
+    .card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(11,18,32,0.10)}
+
+    .card .media{display:flex;align-items:flex-start;padding:18px}
+    .art{width:84px;height:84px;border-radius:18px;flex:0 0 84px;object-fit:cover}
+    .meta{margin-left:12px;flex:1}
+    .meta h3{margin:0 0 6px;font-size:18px}
+    .meta p{margin:0;font-size:13px;color:#435165}
+
+    .card .body{padding:0 18px 18px 18px;margin-top:auto}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tag{font-size:12px;background:#eef2ff;color:#2b2f6a;padding:6px 8px;border-radius:999px}
+
+    .actions{display:flex;gap:10px}
+    .btn{flex:1;text-decoration:none;text-align:center;padding:10px 12px;border-radius:8px;border:1px solid rgba(11,18,32,0.06);background:#1f8cff;color:#fff;font-weight:600}
+
+    footer{text-align:center;color:#6b7280;padding:28px 20px}
+    footer p{margin:6px 0}
+    footer a{color:#1f8cff;text-decoration:none}
+
+    @media (max-width:460px){.meta h3{font-size:16px}.art{width:68px;height:68px;border-radius:14px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Harumi Sagawa — Apps</h1>
+    <p>App Storeに公開しているアプリの一覧。各カードの「App Storeで見る」から個別ページへ飛べます。</p>
+  </header>
+
+  <main class="container">
+    <section class="grid" id="appsGrid">
+      <!-- Cards injected by JS -->
+    </section>
+  </main>
+
+  <footer>
+    <small>このページは App Store のデベロッパーページをもとに作成されています。</small>
+    <p>お問い合わせは <a href="https://twitter.com/messages/compose?recipient_id=YOUR_TWITTER_ID" target="_blank" rel="noopener">TwitterのDM</a> にて受け付けています。</p>
+    <p><a href="privacy.html" target="_blank">プライバシーポリシー</a></p>
+  </footer>
+
+  <script>
+    const apps = [
+      {
+        name: 'ぺろのーむ',
+        url: 'https://apps.apple.com/jp/app/%E3%81%BA%E3%82%8D%E3%81%AE%E3%83%BC%E3%82%80/id1454250247',
+        desc: '振り子の動作をアメを舐める動きで表現したメトロノームアプリです。',
+        category: 'ミュージック',
+        image: 'image/peronome.png'
+      },
+      {
+        name: 'まんがのしおり',
+        url: 'https://apps.apple.com/jp/app/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%AE%E3%81%97%E3%81%8A%E3%82%8A/id6469087739',
+        desc: 'どこまで読んだかを一括管理。Web共有から追加可能。',
+        category: 'ユーティリティ',
+        image: 'image/DigitalBookmark.png'
+      },
+      { name: '今季のアニメを一括管理~アニメ手帳~', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '今期アニメの視聴管理アプリ', category: 'エンターテインメント', image: 'image/animeSchedule.png' },
+      { name: 'Rubi', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '辞書／辞典系アプリ', category: '辞書／辞典／その他', image: 'image/rubi.png' },
+      { name: 'だれのあし~脳トレIQ謎解き足クイズアプリ~', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '脳トレ・カジュアルゲーム', category: 'カジュアル', image: 'image/whoLeg.png' },
+      { name: 'えびフライ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'アクションゲーム', category: 'アクション', image: 'image/ebiFly.png' },
+      { name: 'Kodo-心臓博物館', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '教育系アプリ', category: '教育', image: 'image/kodo.png' },
+      { name: '緊急事態をポケットの中からワンタップで録音！', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'ワンタップ録音（ユーティリティ）', category: '仕事効率化', image: 'image/tapreco.png' },
+      { name: 'toio コントローラアプリ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'toio 用コントローラ', category: 'エンターテインメント', image: 'image/toioController.png' },
+      { name: 'Switchキャプチャ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'Switchのキャプチャを扱うユーティリティ', category: 'アクション', image: 'image/switch-svc-icon-deleteAlpha.png' }
+    ];
+
+    const grid = document.getElementById('appsGrid');
+
+    apps.forEach(app=>{
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="media">
+          <img src="${app.image}" alt="${app.name} アイコン" class="art" />
+          <div class="meta">
+            <h3>${app.name}</h3>
+            <p>${app.category} ・ ${app.desc}</p>
+          </div>
+        </div>
+        <div class="body">
+          <div class="tags"><span class="tag">App Store</span><span class="tag">Harumi Sagawa</span></div>
+          <div class="actions">
+            <a class="btn" href="${app.url}" target="_blank" rel="noopener">App Storeで見る</a>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
