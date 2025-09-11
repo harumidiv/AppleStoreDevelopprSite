@@ -1,162 +1,91 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Harumi Sagawa — Apps</title>
-  <style>
-    *{box-sizing:border-box}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Hiragino Kaku Gothic ProN',Arial;line-height:1.45;margin:0;background:#f6f7fb;color:#0b1220}
-    header{background:linear-gradient(90deg,#6c5ce7,#00b4d8);color:#fff;padding:36px 20px;text-align:center}
-    header h1{margin:0;font-size:clamp(20px,4vw,32px)}
-    header p{margin:8px 0 0;opacity:.95}
-
-    .container{max-width:1100px;margin:28px auto;padding:0 20px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
-
-    .card{background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(11,18,32,0.06);overflow:hidden;display:flex;flex-direction:column;min-height:260px;transition:transform .18s ease,box-shadow .18s ease}
-    .card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(11,18,32,0.10)}
-
-    .media{padding:18px;display:flex;align-items:flex-start;gap:12px}
-    .art{width:84px;height:84px;border-radius:18px;object-fit:cover;flex-shrink:0}
-    .art-fallback{display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;width:84px;height:84px;border-radius:18px}
-    .meta{flex:1}
-    .meta h3{margin:0 0 4px;font-size:18px}
-    .meta p{margin:0;font-size:13px;color:#435165;line-height:1.5;white-space:normal}
-
-    .card .body{padding:0 18px 18px 18px;margin-top:auto}
-
-    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tag{font-size:12px;background:#eef2ff;color:#2b2f6a;padding:6px 8px;border-radius:999px}
-
-    /* ボタン横並びでセル幅の半分に固定 */
-    .actions{
-      display:flex;
-      gap:10px;
-      justify-content:flex-start;
-    }
-    .actions a{
-      flex: 1;
-      max-width: 50%;
-      text-decoration:none;
-      text-align:center;
-      padding:10px 12px;
-      border-radius:8px;
-      border:1px solid rgba(11,18,32,0.06);
-      background:#1f8cff;
-      color:#fff;
-      font-weight:600;
-    }
-
-    footer{text-align:center;color:#6b7280;padding:28px 20px}
-    footer p{margin:6px 0}
-    footer a{color:#1f8cff;text-decoration:none}
-
-    @media (max-width:460px){.meta h3{font-size:16px}.art,.art-fallback{width:68px;height:68px;border-radius:14px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>野生のプログラマZ</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.45;margin:0;background:#f6f7fb;color:#0b1220}
+header{background:linear-gradient(90deg,#6c5ce7,#00b4d8);color:#fff;padding:36px 20px;text-align:center}
+header h1{margin:0;font-size:clamp(20px,4vw,32px)}
+header p{margin:8px 0 0;opacity:.95}
+.container{max-width:1100px;margin:28px auto;padding:0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.card{background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(11,18,32,0.06);overflow:hidden;display:flex;flex-direction:column;min-height:260px;transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(11,18,32,0.10)}
+.media{padding:18px;display:flex;align-items:flex-start;gap:12px}
+.art{width:84px;height:84px;border-radius:18px;object-fit:cover;flex-shrink:0}
+.art-fallback{display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;width:84px;height:84px;border-radius:18px}
+.meta{flex:1}
+.meta h3{margin:0 0 4px;font-size:18px}
+.meta p{margin:0;font-size:13px;color:#435165;line-height:1.5;white-space:normal}
+.card .body{padding:0 18px 18px 18px;margin-top:auto}
+.actions{display:flex;gap:10px;justify-content:center}
+.btn{text-decoration:none;text-align:center;padding:10px 12px;border-radius:8px;border:1px solid rgba(11,18,32,0.06);background:#1f8cff;color:#fff;font-weight:600;width:48%}
+footer{text-align:center;color:#6b7280;padding:28px 20px}
+footer p{margin:6px 0}
+footer a{color:#1f8cff;text-decoration:none}
+@media (max-width:460px){.meta h3{font-size:16px}.art,.art-fallback{width:68px;height:68px;border-radius:14px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Harumi Sagawa — Apps</h1>
-    <p>App Storeに公開しているアプリの一覧。各カードの「App Storeで見る」から個別ページへ飛べます。</p>
-  </header>
+<header>
+<h1>野生のプログラマZ</h1>
+<p>App Storeに公開しているアプリの一覧。各カードの「詳細」から個別ページへ飛べます。</p>
+</header>
 
-  <main class="container">
-    <section class="grid" id="appsGrid"></section>
-  </main>
+<main class="container">
+<section class="grid" id="appsGrid"></section>
+</main>
 
-  <footer>
-    <small>このページは App Store のデベロッパーページをもとに作成されています。</small>
-    <p>お問い合わせは <a href="https://twitter.com/messages/compose?recipient_id=u11238123" target="_blank" rel="noopener">TwitterのDM</a> にて受け付けています。</p>
-    <p><a href="privacy.html" target="_blank">プライバシーポリシー</a></p>
-  </footer>
+<footer>
+<small>このページは App Store のデベロッパーページをもとに作成されています。</small>
+<p>お問い合わせは <a href="https://twitter.com/messages/compose?recipient_id=u11238123" target="_blank" rel="noopener">TwitterのDM</a> にて受け付けています。</p>
+<p><a href="privacy.html" target="_blank">プライバシーポリシー</a></p>
+</footer>
 
-  <script>
-    const apps = [
-      { name: 'ぺろのーむ', url: 'https://apps.apple.com/jp/app/%E3%81%BA%E3%82%8D%E3%81%AE%E3%83%BC%E3%82%80/id1454250247', desc: '振り子の動作をアメを舐める動きで表現したメトロノームアプリです。', category: 'ミュージック', image: 'image/peronome.png' },
-      { name: 'oh!natto', url: 'https://apps.apple.com/jp/app/oh-natto-%E7%B4%8D%E8%B1%86%E3%83%8D%E3%83%90%E3%83%8D%E3%83%90%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3/id1457049172', desc: 'Oh!Natto!は納豆アクションゲームです。\nたくさん混ぜて時間内にたくさん食べよう', category: 'ゲーム', image: 'image/mame.png' },
-      { name: 'まんがのしおり', url: 'https://apps.apple.com/jp/app/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%AE%E3%81%97%E3%81%8A%E3%82%8A/id6469087739', desc: 'たくさんの漫画を読んでいると何巻まで、何話まで読んだかわからなくなる瞬間ありませんか？', category: 'ユーティリティ', image: 'image/DigitalBookmark.png' },
-      { name: 'アニメ手帳', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '今期視聴しているアニメを一括管理できるアプリ、見ているサイトに直接飛べる！', category: 'エンターテインメント', image: 'image/animeSchedule.png' },
-      { name: 'Rubi', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'わからない感じにルビを振るアプリです、音声入浴や手書きもあるよ、感じを克服しよう！', category: '辞書／辞典／その他', image: 'image/rubi.png' },
-      { name: 'だれのあし', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'いろんな足を見て一体それは誰の足なのかを当てるクイズゲームです、わかるかな？', category: 'カジュアル', image: 'image/whoLeg.png' },
-      { name: 'えびフライ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '🍤を空に飛ばす、ただそれだけのゲーム。意外とハマってしまうかも？', category: 'アクション', image: 'image/ebiFly.png' },
-      { name: 'Kodo-心臓博物館', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '心臓の鼓動は生き物によって速さが違う、みんなの生きる速さを手の中で感じてください', category: '教育', image: 'image/kodo.png' },
-      { name: 'たぷれこ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'パワハラが横行する現代社会でいつでもワンタップで録音ができる防犯アプリ', category: '仕事効率化', image: 'image/tapreco.png' },
-      { name: 'toio コントローラアプリ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'toio 用コントローラ、ゲームソフトがなくてもtoioを操作してラジコンのように楽しめます', category: 'エンターテインメント', image: 'image/toioController.png' },
-      { name: 'Switchキャプチャ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'Switchのキャプチャを扱うユーティリティ、iPadでゲームを楽しめます', category: 'アクション', image: 'image/switch-svc-icon-deleteAlpha.png' }
-    ];
+<script>
+const apps = [
+  { name:'ぺろのーむ', url:'https://apps.apple.com/jp/app/1454250247', desc:'振り子の動作をアメを舐める動きで表現したメトロノームアプリです。', category:'ミュージック', image:'image/peronome.png', page:'peronome.html' },
+  { name:'oh!natto', url:'https://apps.apple.com/jp/app/1457049172', desc:'Oh!Natto!は納豆アクションゲームです。たくさん混ぜて時間内にたくさん食べよう', category:'ゲーム', image:'image/mame.png', page:'ohNatto.html' },
+  { name: 'まんがのしおり', url: 'https://apps.apple.com/jp/app/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%AE%E3%81%97%E3%81%8A%E3%82%8A/id6469087739', desc: 'たくさんの漫画を読んでいると何巻まで、何話まで読んだかわからなくなる瞬間ありませんか？', category: 'ユーティリティ', image: 'image/DigitalBookmark.png', page:'ohNatto.html' },
+  { name: 'アニメ手帳', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '今期視聴しているアニメを一括管理できるアプリ、見ているサイトに直接飛べる！', category: 'エンターテインメント', image: 'image/animeSchedule.png', page:'ohNatto.html' },
+  { name: 'Rubi', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'わからない感じにルビを振るアプリです、音声入浴や手書きもあるよ、感じを克服しよう！', category: '辞書／辞典／その他', image: 'image/rubi.png', page:'ohNatto.html' },
+  { name: 'だれのあし', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'いろんな足を見て一体それは誰の足なのかを当てるクイズゲームです、わかるかな？', category: 'カジュアル', image: 'image/whoLeg.png', page:'ohNatto.html' },
+  { name: 'えびフライ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '🍤を空に飛ばす、ただそれだけのゲーム。意外とハマってしまうかも？', category: 'アクション', image: 'image/ebiFly.png', page:'ohNatto.html' },
+  { name: 'Kodo-心臓博物館', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: '心臓の鼓動は生き物によって速さが違う、みんなの生きる速さを手の中で感じてください', category: '教育', image: 'image/kodo.png', page:'ohNatto.html' },
+  { name: 'たぷれこ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'パワハラが横行する現代社会でいつでもワンタップで録音ができる防犯アプリ', category: '仕事効率化', image: 'image/tapreco.png', page:'ohNatto.html' },
+  { name: 'toio コントローラアプリ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'toio 用コントローラ、ゲームソフトがなくてもtoioを操作してラジコンのように楽しめます', category: 'エンターテインメント', image: 'image/toioController.png', page:'ohNatto.html' },
+  { name: 'Switchキャプチャ', url: 'https://apps.apple.com/jp/developer/harumi-sagawa/id1454250246', desc: 'Switchのキャプチャを扱うユーティリティ、iPadでゲームを楽しめます', category: 'アクション', image: 'image/switch-svc-icon-deleteAlpha.png', page:'ohNatto.html' }
+];
 
-    const grid = document.getElementById('appsGrid');
 
-    function makeInitials(name){
-      return Array.from(name.trim()).slice(0,2).join('');
-    }
+const grid = document.getElementById('appsGrid');
 
-    apps.forEach(app=>{
-      const card = document.createElement('article');
-      card.className = 'card';
+apps.forEach(app=>{
+  const card = document.createElement('article'); card.className='card';
+  const media = document.createElement('div'); media.className='media';
+  const img = document.createElement('img'); img.className='art'; img.src=app.image; img.alt=app.name;
+  media.appendChild(img);
+  const meta = document.createElement('div'); meta.className='meta';
+  const h3 = document.createElement('h3'); h3.textContent=app.name; meta.appendChild(h3);
+  const p = document.createElement('p'); p.textContent=app.desc; meta.appendChild(p);
+  media.appendChild(meta); card.appendChild(media);
 
-      const media = document.createElement('div');
-      media.className = 'media';
+  const body = document.createElement('div'); body.className='body';
+  const tags = document.createElement('div'); tags.className='tags';
+  const tag = document.createElement('span'); tag.className='tag'; tag.textContent=app.category; tags.appendChild(tag);
+  body.appendChild(tags);
 
-      const img = document.createElement('img');
-      img.className = 'art';
-      img.alt = `${app.name} アイコン`;
-      img.src = app.image;
-      img.addEventListener('error', ()=>{
-        const fallback = document.createElement('div');
-        fallback.className = 'art art-fallback';
-        fallback.textContent = makeInitials(app.name);
-        fallback.style.background = 'linear-gradient(135deg,#f6d365,#fda085)';
-        media.replaceChild(fallback, img);
-      });
-      media.appendChild(img);
-
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      const h3 = document.createElement('h3');
-      h3.textContent = app.name;
-      meta.appendChild(h3);
-      const desc = document.createElement('p');
-      desc.textContent = app.desc;
-      meta.appendChild(desc);
-
-      media.appendChild(meta);
-      card.appendChild(media);
-
-      const body = document.createElement('div');
-      body.className = 'body';
-
-      const tags = document.createElement('div');
-      tags.className = 'tags';
-      const tag = document.createElement('span');
-      tag.className = 'tag';
-      tag.textContent = app.category;
-      tags.appendChild(tag);
-      body.appendChild(tags);
-
-      const actions = document.createElement('div');
-      actions.className = 'actions';
-
-      const aStore = document.createElement('a');
-      aStore.className = 'btn';
-      aStore.href = app.url;
-      aStore.target = '_blank';
-      aStore.rel = 'noopener';
-      aStore.textContent = 'App Store';
-      actions.appendChild(aStore);
-
-      const aDetail = document.createElement('a');
-      aDetail.className = 'btn';
-      aDetail.href = '#';
-      aDetail.textContent = '詳細';
-      actions.appendChild(aDetail);
-
-      body.appendChild(actions);
-      card.appendChild(body);
-
-      grid.appendChild(card);
-    });
-  </script>
+  const actions = document.createElement('div'); actions.className='actions';
+  const aStore = document.createElement('a'); aStore.className='btn'; aStore.href=app.url; aStore.target='_blank'; aStore.textContent='App Store';
+  const aDetail = document.createElement('a'); aDetail.className='btn'; aDetail.href=app.page; aDetail.textContent='詳細';
+  actions.appendChild(aStore); actions.appendChild(aDetail);
+  body.appendChild(actions);
+  card.appendChild(body);
+  grid.appendChild(card);
+});
+</script>
 </body>
 </html>
