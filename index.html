@@ -29,8 +29,24 @@
     .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tag{font-size:12px;background:#eef2ff;color:#2b2f6a;padding:6px 8px;border-radius:999px}
 
-    .actions{display:flex;gap:10px;justify-content:center}
-    .btn{text-decoration:none;text-align:center;padding:10px 12px;border-radius:8px;border:1px solid rgba(11,18,32,0.06);background:#1f8cff;color:#fff;font-weight:600}
+    /* ボタン横並びでセル幅の半分に固定 */
+    .actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-start;
+    }
+    .actions a{
+      flex: 1;
+      max-width: 50%;
+      text-decoration:none;
+      text-align:center;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(11,18,32,0.06);
+      background:#1f8cff;
+      color:#fff;
+      font-weight:600;
+    }
 
     footer{text-align:center;color:#6b7280;padding:28px 20px}
     footer p{margin:6px 0}
@@ -46,9 +62,7 @@
   </header>
 
   <main class="container">
-    <section class="grid" id="appsGrid">
-      <!-- Cards injected by JS -->
-    </section>
+    <section class="grid" id="appsGrid"></section>
   </main>
 
   <footer>
@@ -123,15 +137,22 @@
 
       const actions = document.createElement('div');
       actions.className = 'actions';
-      const a = document.createElement('a');
-      a.className = 'btn';
-      a.href = app.url;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.textContent = 'App Storeで見る';
-      actions.appendChild(a);
-      body.appendChild(actions);
 
+      const aStore = document.createElement('a');
+      aStore.className = 'btn';
+      aStore.href = app.url;
+      aStore.target = '_blank';
+      aStore.rel = 'noopener';
+      aStore.textContent = 'App Store';
+      actions.appendChild(aStore);
+
+      const aDetail = document.createElement('a');
+      aDetail.className = 'btn';
+      aDetail.href = '#';
+      aDetail.textContent = '詳細';
+      actions.appendChild(aDetail);
+
+      body.appendChild(actions);
       card.appendChild(body);
 
       grid.appendChild(card);
