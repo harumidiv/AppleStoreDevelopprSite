@@ -22,9 +22,12 @@
     .art-fallback{display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;width:84px;height:84px;border-radius:18px}
     .meta{flex:1}
     .meta h3{margin:0 0 4px;font-size:18px}
-    .meta p{margin-top:8px;font-size:13px;color:#435165;line-height:1.6;white-space:normal}
+    .meta p{margin:0;font-size:13px;color:#435165;line-height:1.5;white-space:normal}
 
     .card .body{padding:0 18px 18px 18px;margin-top:auto}
+
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tag{font-size:12px;background:#eef2ff;color:#2b2f6a;padding:6px 8px;border-radius:999px}
 
     .actions{display:flex;gap:10px;justify-content:center}
     .btn{text-decoration:none;text-align:center;padding:10px 12px;border-radius:8px;border:1px solid rgba(11,18,32,0.06);background:#1f8cff;color:#fff;font-weight:600}
@@ -85,7 +88,7 @@
       const img = document.createElement('img');
       img.className = 'art';
       img.alt = `${app.name} アイコン`;
-      img.src = `image/${app.image.split('/').pop()}`;
+      img.src = app.image;
       img.addEventListener('error', ()=>{
         const fallback = document.createElement('div');
         fallback.className = 'art art-fallback';
@@ -93,7 +96,6 @@
         fallback.style.background = 'linear-gradient(135deg,#f6d365,#fda085)';
         media.replaceChild(fallback, img);
       });
-
       media.appendChild(img);
 
       const meta = document.createElement('div');
@@ -101,6 +103,9 @@
       const h3 = document.createElement('h3');
       h3.textContent = app.name;
       meta.appendChild(h3);
+      const desc = document.createElement('p');
+      desc.textContent = app.desc;
+      meta.appendChild(desc);
 
       media.appendChild(meta);
       card.appendChild(media);
@@ -108,10 +113,13 @@
       const body = document.createElement('div');
       body.className = 'body';
 
-      const desc = document.createElement('p');
-      desc.textContent = `${app.category} ・ ${app.desc}`;
-      desc.style.marginBottom = '12px';
-      body.appendChild(desc);
+      const tags = document.createElement('div');
+      tags.className = 'tags';
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = app.category;
+      tags.appendChild(tag);
+      body.appendChild(tags);
 
       const actions = document.createElement('div');
       actions.className = 'actions';
