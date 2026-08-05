@@ -37,7 +37,7 @@
     }
 
     a { color: inherit; }
-    img { display: block; max-width: 100%; }
+    img { display: block; max-width: 100%; height: auto; }
     .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 
     .hero {
@@ -164,6 +164,9 @@
     .hero-shot {
       position: relative;
       width: min(100%, 365px);
+      height: auto;
+      aspect-ratio: 1284 / 2778;
+      object-fit: contain;
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,.22);
       box-shadow: 0 40px 90px rgba(0,0,0,.52);
@@ -249,18 +252,29 @@
     .step p { margin: 0; color: var(--muted); font-size: .93rem; }
 
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px;
     }
     figure {
+      flex: 0 1 300px;
+      width: min(100%, 300px);
       margin: 0;
       padding: 9px;
       border: 1px solid var(--line);
       border-radius: 20px;
       background: rgba(255,255,255,.035);
     }
-    figure img { width: 100%; border-radius: 14px; }
+    figure img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1284 / 2778;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #03050c;
+    }
     figcaption { padding: 11px 5px 5px; color: var(--muted); text-align: center; font-size: .82rem; }
 
     .notice {
@@ -319,12 +333,18 @@
       .step:nth-child(even) { border-left: 1px solid var(--line); }
       .step:nth-child(n+3) { border-top: 1px solid var(--line); }
       .gallery {
-        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
+        overscroll-behavior-inline: contain;
         padding-bottom: 12px;
       }
-      figure { flex: 0 0 min(76vw, 310px); scroll-snap-align: center; }
+      figure {
+        flex: 0 0 min(78vw, 320px);
+        width: min(78vw, 320px);
+        scroll-snap-align: center;
+      }
     }
 
     @media (max-width: 620px) {
@@ -370,7 +390,7 @@
         </div>
       </div>
       <div class="hero-visual">
-        <img class="hero-shot" src="../image/SakataDojo/04_answer.jpg" alt="赤三兵の正解と、その後の値動きを確認している酒田道場の画面" width="739" height="1600" />
+        <img class="hero-shot" src="../image/SakataDojo/04_answer.jpg?v=2" alt="赤三兵の正解と、その後の値動きを確認している酒田道場の画面" width="739" height="1600" />
       </div>
     </div>
   </header>
@@ -433,11 +453,11 @@
         <p>iPhoneでは片手で問題に集中でき、iPadではチャートをより大きく確認できます。</p>
       </div>
       <div class="gallery" aria-label="酒田道場のスクリーンショット">
-        <figure><img src="../image/SakataDojo/01_title.jpg" alt="酒田道場の出題形式と問題数選択画面" loading="lazy" width="739" height="1600" /><figcaption>2つの出題形式</figcaption></figure>
-        <figure><img src="../image/SakataDojo/02_direction.jpg" alt="チャートを見て上昇か下落かを選ぶクイズ画面" loading="lazy" width="739" height="1600" /><figcaption>上昇／下落クイズ</figcaption></figure>
-        <figure><img src="../image/SakataDojo/03_pattern.jpg" alt="ローソク足パターン名を4択で答える画面" loading="lazy" width="739" height="1600" /><figcaption>パターン名4択</figcaption></figure>
-        <figure><img src="../image/SakataDojo/04_answer.jpg" alt="正解とパターン成立後の値動きを表示した画面" loading="lazy" width="739" height="1600" /><figcaption>答えとその後</figcaption></figure>
-        <figure><img src="../image/SakataDojo/05_study.jpg" alt="ローソク足30パターンを一覧できる図鑑画面" loading="lazy" width="739" height="1600" /><figcaption>30パターン図鑑</figcaption></figure>
+        <figure><img src="../image/SakataDojo/01_title.jpg?v=2" alt="酒田道場の出題形式と問題数選択画面" loading="lazy" width="739" height="1600" /><figcaption>2つの出題形式</figcaption></figure>
+        <figure><img src="../image/SakataDojo/02_direction.jpg?v=2" alt="チャートを見て上昇か下落かを選ぶクイズ画面" loading="lazy" width="739" height="1600" /><figcaption>上昇／下落クイズ</figcaption></figure>
+        <figure><img src="../image/SakataDojo/03_pattern.jpg?v=2" alt="ローソク足パターン名を4択で答える画面" loading="lazy" width="739" height="1600" /><figcaption>パターン名4択</figcaption></figure>
+        <figure><img src="../image/SakataDojo/04_answer.jpg?v=2" alt="正解とパターン成立後の値動きを表示した画面" loading="lazy" width="739" height="1600" /><figcaption>答えとその後</figcaption></figure>
+        <figure><img src="../image/SakataDojo/05_study.jpg?v=2" alt="ローソク足30パターンを一覧できる図鑑画面" loading="lazy" width="739" height="1600" /><figcaption>30パターン図鑑</figcaption></figure>
       </div>
     </section>
 
