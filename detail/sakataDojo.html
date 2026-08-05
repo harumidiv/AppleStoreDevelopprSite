@@ -2,9 +2,16 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="酒田道場は、実例チャートを使ってローソク足30パターンをクイズと図鑑で学べるiPhone・iPadアプリです。" />
   <meta name="theme-color" content="#050713" />
+  <meta name="apple-itunes-app" content="app-id=6798115410" />
+  <meta property="og:title" content="酒田道場 - ローソク足クイズ＆パターン図鑑" />
+  <meta property="og:description" content="実例チャートで、酒田の型を楽しく学ぶ。2つのクイズと30パターン図鑑を収録。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/sakataDojo.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/SakataDojo/01_title.jpg" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/sakataDojo.html" />
   <title>酒田道場 - ローソク足クイズ＆パターン図鑑</title>
   <style>
     :root {
@@ -27,6 +34,7 @@
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
+      overflow-x: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
       color: var(--text);
       background:
@@ -38,6 +46,7 @@
 
     a { color: inherit; }
     img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid rgba(62,216,255,.68); outline-offset: 4px; }
     .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 
     .hero {
@@ -77,6 +86,7 @@
       align-items: center;
       justify-content: space-between;
       min-height: 74px;
+      gap: 24px;
     }
     .back {
       display: inline-flex;
@@ -87,7 +97,25 @@
       font-weight: 700;
     }
     .back:hover { color: var(--text); }
-    .mini-brand { color: var(--cyan); font-weight: 800; letter-spacing: .04em; }
+    .nav-links { display: flex; align-items: center; gap: 26px; }
+    .nav-links > a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .84rem;
+      font-weight: 750;
+      transition: color .2s ease;
+    }
+    .nav-links > a:hover { color: var(--text); }
+    .nav-store {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 16px;
+      border: 1px solid rgba(62,216,255,.34);
+      border-radius: 999px;
+      color: var(--cyan) !important;
+      background: rgba(62,216,255,.08);
+    }
 
     .hero-grid {
       position: relative;
@@ -144,7 +172,9 @@
       border: 1px solid var(--line);
       text-decoration: none;
       font-weight: 800;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
     }
+    .button:hover { transform: translateY(-2px); }
     .button.primary {
       border: 0;
       color: #06101b;
@@ -152,8 +182,9 @@
       box-shadow: 0 10px 34px rgba(62,216,255,.18);
     }
     .button.secondary { background: rgba(255,255,255,.04); }
+    .button.secondary:hover { border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.07); }
     .button.disabled { color: #9ca8be; background: rgba(255,255,255,.055); cursor: default; }
-    .hero-visual { position: relative; display: grid; place-items: center; }
+    .hero-visual { position: relative; display: grid; place-items: center; min-height: 650px; perspective: 1200px; }
     .hero-visual::before {
       content: "";
       position: absolute;
@@ -161,17 +192,54 @@
       background: radial-gradient(circle, rgba(255,78,203,.22), rgba(32,140,255,.10) 42%, transparent 70%);
       filter: blur(20px);
     }
+    .hero-stack { position: relative; width: 100%; height: 650px; }
     .hero-shot {
-      position: relative;
-      width: min(100%, 365px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(72%, 335px);
       height: auto;
       aspect-ratio: 1284 / 2778;
-      object-fit: contain;
-      border-radius: 30px;
+      object-fit: cover;
+      border-radius: 26px;
       border: 1px solid rgba(255,255,255,.22);
       box-shadow: 0 40px 90px rgba(0,0,0,.52);
-      transform: rotate(2deg);
     }
+    .hero-shot.main {
+      z-index: 3;
+      transform: translate(-50%, -50%) rotate(1deg);
+      animation: hero-float 6s ease-in-out infinite;
+    }
+    .hero-shot.left {
+      z-index: 1;
+      width: min(62%, 285px);
+      opacity: .38;
+      filter: saturate(.8) brightness(.68);
+      transform: translate(-88%, -48%) rotate(-8deg);
+    }
+    .hero-shot.right {
+      z-index: 2;
+      width: min(62%, 285px);
+      opacity: .48;
+      filter: saturate(.85) brightness(.72);
+      transform: translate(-12%, -48%) rotate(8deg);
+    }
+    @keyframes hero-float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(1deg); }
+      50% { transform: translate(-50%, calc(-50% - 10px)) rotate(0deg); }
+    }
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 22px 0 0;
+      padding: 0;
+      color: var(--muted);
+      list-style: none;
+      font-size: .79rem;
+    }
+    .hero-note li { display: inline-flex; align-items: center; gap: 7px; }
+    .hero-note li::before { content: "✓"; color: #4ade80; font-weight: 900; }
 
     .statbar {
       display: grid;
@@ -208,7 +276,9 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      transition: transform .25s ease, border-color .25s ease;
     }
+    .feature:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.18); }
     .feature::after {
       content: attr(data-number);
       position: absolute;
@@ -251,6 +321,75 @@
     .step h3 { margin: 7px 0 8px; font-size: 1.15rem; }
     .step p { margin: 0; color: var(--muted); font-size: .93rem; }
 
+    .learning-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .learning-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .learning-media {
+      position: relative;
+      display: grid;
+      place-items: end center;
+      min-height: 440px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 30%, var(--card-glow, rgba(32,140,255,.25)), transparent 55%),
+        #050914;
+    }
+    .learning-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .32;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 46px 46px;
+    }
+    .learning-media img {
+      position: relative;
+      z-index: 1;
+      width: min(72%, 275px);
+      margin-bottom: -33%;
+      border: 1px solid rgba(255,255,255,.17);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 24px 64px rgba(0,0,0,.52);
+    }
+    .learning-copy { padding: 28px 26px 31px; }
+    .learning-copy small { color: var(--accent, var(--cyan)); font-weight: 850; letter-spacing: .13em; }
+    .learning-copy h3 { margin: 8px 0 9px; font-size: 1.45rem; letter-spacing: -.02em; }
+    .learning-copy p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .pattern-panel {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(430px, 1.2fr);
+      gap: clamp(36px, 7vw, 86px);
+      align-items: center;
+      padding: clamp(34px, 6vw, 68px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 90% 12%, rgba(255,78,203,.13), transparent 32%),
+        radial-gradient(circle at 6% 90%, rgba(62,216,255,.12), transparent 31%),
+        var(--surface);
+    }
+    .pattern-panel h2 { margin-top: 8px; }
+    .pattern-panel-copy > p:last-child { color: var(--muted); }
+    .pattern-groups { display: grid; gap: 16px; }
+    .pattern-group { padding: 22px; border: 1px solid var(--line); border-radius: 20px; background: rgba(2,4,11,.4); }
+    .pattern-group h3 { display: flex; align-items: center; gap: 9px; margin: 0 0 13px; font-size: .9rem; }
+    .signal-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 14px var(--signal); }
+    .pattern-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pattern-tags span { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: #ccd4e3; background: rgba(255,255,255,.035); font-size: .76rem; }
+
     .gallery {
       display: flex;
       flex-wrap: wrap;
@@ -276,6 +415,26 @@
       background: #03050c;
     }
     figcaption { padding: 11px 5px 5px; color: var(--muted); text-align: center; font-size: .82rem; }
+
+    .download-cta {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 25px;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: clamp(28px, 5vw, 50px);
+      overflow: hidden;
+      border: 1px solid rgba(62,216,255,.22);
+      border-radius: var(--radius);
+      background: linear-gradient(110deg, rgba(62,216,255,.10), rgba(255,78,203,.08)), var(--surface);
+    }
+    .download-cta::after { content: ""; position: absolute; right: 5%; top: -120px; width: 280px; height: 280px; border-radius: 50%; background: rgba(62,216,255,.13); filter: blur(30px); }
+    .download-icon { position: relative; z-index: 1; width: 88px; height: 88px; border-radius: 22px; box-shadow: 0 18px 45px rgba(0,0,0,.32); }
+    .download-copy { position: relative; z-index: 1; }
+    .download-copy h2 { font-size: clamp(1.55rem, 3.4vw, 2.7rem); }
+    .download-copy p { margin: 7px 0 0; color: var(--muted); }
+    .download-cta .button { position: relative; z-index: 1; white-space: nowrap; }
 
     .notice {
       display: grid;
@@ -325,7 +484,11 @@
       .hero-copy { text-align: center; }
       .app-brand, .actions { justify-content: center; }
       .lead { margin-inline: auto; }
-      .hero-shot { width: min(78vw, 350px); transform: none; }
+      .hero-visual { min-height: 590px; }
+      .hero-stack { height: 590px; }
+      .hero-shot { width: min(64vw, 310px); }
+      .hero-shot.left, .hero-shot.right { width: min(54vw, 260px); }
+      .hero-note { justify-content: center; }
       .statbar { grid-template-columns: 1fr; }
       .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
       .steps { grid-template-columns: repeat(2, 1fr); }
@@ -345,11 +508,19 @@
         width: min(78vw, 320px);
         scroll-snap-align: center;
       }
+      .learning-grid { grid-template-columns: 1fr; }
+      .learning-card { display: grid; grid-template-columns: minmax(260px, .85fr) 1.15fr; }
+      .learning-media { min-height: 430px; }
+      .learning-copy { display: flex; flex-direction: column; justify-content: center; }
+      .pattern-panel { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
     }
 
     @media (max-width: 620px) {
       .wrap { width: min(100% - 28px, 1180px); }
-      .mini-brand { display: none; }
+      .nav-links > a:not(.nav-store) { display: none; }
+      .nav-store { min-height: 34px; padding-inline: 13px; }
       .hero-grid { padding-bottom: 62px; }
       .app-brand { align-items: center; }
       .app-icon { width: 70px; height: 70px; border-radius: 17px; }
@@ -361,10 +532,23 @@
       .section { margin-bottom: 78px; }
       .feature { min-height: 0; }
       .notice { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 510px; }
+      .hero-stack { height: 510px; }
+      .hero-shot { width: min(68vw, 280px); }
+      .hero-shot.left { transform: translate(-79%, -48%) rotate(-6deg); }
+      .hero-shot.right { transform: translate(-21%, -48%) rotate(6deg); }
+      .learning-card { grid-template-columns: 1fr; }
+      .learning-media { min-height: 410px; }
+      .pattern-panel { min-width: 0; padding: 28px 22px; }
+      .download-cta { grid-template-columns: 1fr; text-align: center; padding: 30px 22px; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .hero-shot.main { animation: none; }
+      .button, .feature { transition: none; }
     }
   </style>
 </head>
@@ -372,7 +556,12 @@
   <header class="hero">
     <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
       <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
-      <span class="mini-brand">HARUMI SAGAWA — APPS</span>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#learning">学び方</a>
+        <a href="#patterns">図鑑</a>
+        <a class="nav-store" href="https://apps.apple.com/jp/app/id6798115410" target="_blank" rel="noopener">App Store</a>
+      </div>
     </nav>
 
     <div class="hero-grid wrap">
@@ -388,9 +577,18 @@
           <a class="button primary" href="https://apps.apple.com/jp/app/id6798115410" target="_blank" rel="noopener">App Storeで見る</a>
           <a class="button secondary" href="#features">機能を見る</a>
         </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>iPhone・iPad対応</li>
+          <li>30パターン収録</li>
+          <li>自分のペースで反復</li>
+        </ul>
       </div>
       <div class="hero-visual">
-        <img class="hero-shot" src="../image/SakataDojo/04_answer.jpg?v=2" alt="赤三兵の正解と、その後の値動きを確認している酒田道場の画面" width="739" height="1600" />
+        <div class="hero-stack">
+          <img class="hero-shot left" src="../image/SakataDojo/02_direction.jpg?v=3" alt="上昇か下落かを予測するクイズ画面" width="739" height="1600" />
+          <img class="hero-shot right" src="../image/SakataDojo/05_study.jpg?v=3" alt="30パターンを確認できる図鑑画面" width="739" height="1600" />
+          <img class="hero-shot main" src="../image/SakataDojo/01_title.jpg?v=3" alt="酒田道場の出題形式と問題数を選ぶ画面" width="739" height="1600" />
+        </div>
       </div>
     </div>
   </header>
@@ -433,16 +631,43 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="learning">
       <div class="section-heading">
         <p class="section-label">LEARNING FLOW</p>
-        <h2>1問ごとに、読み方が深まる。</h2>
+        <h2>見抜く。確かめる。身につける。</h2>
+        <p>一問ごとの小さなサイクルが、チャートを見る力を育てます。</p>
       </div>
-      <div class="steps">
-        <article class="step"><small>STEP 1</small><h3>形式を選ぶ</h3><p>方向クイズかパターン名4択を選択。</p></article>
-        <article class="step"><small>STEP 2</small><h3>チャートを読む</h3><p>ローソク足・移動平均線・出来高を確認。</p></article>
-        <article class="step"><small>STEP 3</small><h3>答える</h3><p>上昇／下落、または4つの型から回答。</p></article>
-        <article class="step"><small>STEP 4</small><h3>実例で復習</h3><p>解説と成立後の値動きまで振り返る。</p></article>
+      <div class="learning-grid">
+        <article class="learning-card">
+          <div class="learning-media" style="--card-glow:rgba(32,140,255,.28)"><img src="../image/SakataDojo/02_direction.jpg?v=3" alt="上昇か下落かを選ぶクイズ画面" loading="lazy" width="739" height="1600" /></div>
+          <div class="learning-copy"><small>01 — READ</small><h3>自分の目で見抜く</h3><p>パターン名を伏せた実例から、その後に上がるか下がるかを予測します。</p></div>
+        </article>
+        <article class="learning-card" style="--accent:var(--magenta)">
+          <div class="learning-media" style="--card-glow:rgba(255,78,203,.24)"><img src="../image/SakataDojo/04_answer.jpg?v=3" alt="正解とパターン成立後の値動きを確認する画面" loading="lazy" width="739" height="1600" /></div>
+          <div class="learning-copy"><small>02 — CHECK</small><h3>答えの先まで確認</h3><p>正解と解説に加えて、成立後20日間の値動きまで同じ画面で振り返れます。</p></div>
+        </article>
+        <article class="learning-card" style="--accent:var(--gold)">
+          <div class="learning-media" style="--card-glow:rgba(255,186,69,.22)"><img src="../image/SakataDojo/05_study.jpg?v=3" alt="ローソク足パターンを一覧できる図鑑画面" loading="lazy" width="739" height="1600" /></div>
+          <div class="learning-copy"><small>03 — REVIEW</small><h3>図鑑ですぐ復習</h3><p>意味・見方・実例を確認し、迷った型をクイズと行き来しながら身につけます。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section pattern-panel" id="patterns">
+      <div class="pattern-panel-copy">
+        <p class="section-label">30 PATTERNS</p>
+        <h2>酒田の型を、<br />ひとつずつ。</h2>
+        <p>代表的な上昇・下落サインから複合パターンまで、実例と一緒に整理して学べます。</p>
+      </div>
+      <div class="pattern-groups">
+        <div class="pattern-group">
+          <h3><span class="signal-dot" style="--signal:var(--red)"></span>上昇サイン</h3>
+          <div class="pattern-tags"><span>赤三兵</span><span>明けの明星</span><span>包み足陽線</span><span>切り込み線</span><span>毛抜き底</span></div>
+        </div>
+        <div class="pattern-group">
+          <h3><span class="signal-dot" style="--signal:var(--blue)"></span>下落サイン</h3>
+          <div class="pattern-tags"><span>三羽烏</span><span>宵の明星</span><span>包み足陰線</span><span>かぶせ線</span><span>毛抜き天井</span></div>
+        </div>
       </div>
     </section>
 
@@ -459,6 +684,12 @@
         <figure><img src="../image/SakataDojo/04_answer.jpg?v=2" alt="正解とパターン成立後の値動きを表示した画面" loading="lazy" width="739" height="1600" /><figcaption>答えとその後</figcaption></figure>
         <figure><img src="../image/SakataDojo/05_study.jpg?v=2" alt="ローソク足30パターンを一覧できる図鑑画面" loading="lazy" width="739" height="1600" /><figcaption>30パターン図鑑</figcaption></figure>
       </div>
+    </section>
+
+    <section class="download-cta" aria-label="酒田道場をダウンロード">
+      <img class="download-icon" src="../image/icon/sakataDojo.png" alt="" width="88" height="88" />
+      <div class="download-copy"><h2>チャートを見る目を、今日から。</h2><p>実例で学ぶ、ローソク足クイズ＆パターン図鑑。</p></div>
+      <a class="button primary" href="https://apps.apple.com/jp/app/id6798115410" target="_blank" rel="noopener">App Storeで見る</a>
     </section>
 
     <section class="section notice" aria-labelledby="investment-notice">
