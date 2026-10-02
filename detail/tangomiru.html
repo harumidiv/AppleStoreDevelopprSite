@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="タンゴミルは、読みたい英文を貼り付けるだけで知らない英単語と熟語を抜き出し、自分だけの単語帳と4択クイズを作るiPhone・iPadアプリです。" />
+  <meta name="theme-color" content="#3ed6b4" />
+  <meta property="og:title" content="タンゴミル - 英文を貼るだけで、自分だけの単語帳" />
+  <meta property="og:description" content="英語ニュースや記事を貼り付けるだけで、単語帳と4択クイズが完成。覚えた単語が増えるほど、元の英文が読めるようになります。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/tangomiru.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/Tangomiru/01_review.jpg" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/tangomiru.html" />
+  <title>タンゴミル - 英文を貼るだけで、自分だけの単語帳</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --mint: #3ed6b4;
+      --mint-dot: #8ce8d2;
+      --mint-soft: #e3faf4;
+      --orange: #ff8a3d;
+      --yellow: #ffd43b;
+      --pink: #ff86b8;
+      --lavender: #9688e6;
+      --ink: #2b2350;
+      --muted: #5b5478;
+      --paper: #ffffff;
+      --cream: #fff8ee;
+      --radius: 26px;
+      --line: 3px solid var(--ink);
+      --pop: 6px 6px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.75;
+    }
+    a { color: inherit; }
+    /* 見出しは言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    h1, h2, h3, .stat strong, .lead { word-break: keep-all; overflow-wrap: anywhere; }
+    img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    /* ヒーロー：アイコンと同じミントの水玉 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--mint);
+      background-image: radial-gradient(var(--mint-dot) 22%, transparent 24%);
+      background-size: 44px 44px;
+      border-bottom: var(--line);
+    }
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links > a { text-decoration: none; font-size: .86rem; font-weight: 800; }
+    .nav-links > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .8fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+      padding: 40px 0 84px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .app-icon {
+      width: 84px;
+      height: 84px;
+      border: var(--line);
+      border-radius: 22px;
+      box-shadow: var(--pop);
+    }
+    .app-brand strong { display: block; font-size: 1.4rem; }
+    .app-brand span { display: block; font-size: .86rem; font-weight: 700; }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5.4vw, 4.4rem);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--paper);
+      -webkit-text-stroke: 2px var(--ink);
+      paint-order: stroke fill;
+      text-shadow: 5px 5px 0 var(--ink);
+    }
+    .lead {
+      display: inline-block;
+      max-width: 640px;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--pop);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 600;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      border: var(--line);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+    .button.primary { background: var(--orange); color: var(--paper); }
+    .button.secondary { background: var(--paper); }
+    .button.disabled { background: var(--yellow); cursor: default; }
+    .button.disabled:hover { transform: none; box-shadow: 4px 4px 0 var(--ink); }
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .hero-note li {
+      padding: 4px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .hero-visual { position: relative; min-height: 640px; }
+    .hero-shot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(64%, 300px);
+      border: 4px solid var(--ink);
+      border-radius: 34px;
+      box-shadow: 8px 8px 0 var(--ink);
+      background: var(--paper);
+    }
+    .hero-shot.main { z-index: 3; transform: translate(-50%, -50%) rotate(2deg); animation: float 6s ease-in-out infinite; }
+    .hero-shot.left { z-index: 1; width: min(54%, 250px); transform: translate(-96%, -44%) rotate(-9deg); }
+    .hero-shot.right { z-index: 2; width: min(54%, 250px); transform: translate(-4%, -44%) rotate(9deg); }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(2deg); }
+      50% { transform: translate(-50%, calc(-50% - 12px)) rotate(0deg); }
+    }
+    .sparkle { position: absolute; z-index: 4; width: 54px; height: 54px; }
+    .sparkle.one { top: 6%; left: 4%; }
+    .sparkle.two { right: 2%; bottom: 10%; width: 42px; height: 42px; }
+
+    .statbar {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: -36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .stat { padding: 22px; text-align: center; }
+    .stat + .stat { border-left: var(--line); }
+    .stat strong { display: block; font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.2; }
+    .stat:nth-child(1) strong { color: var(--orange); }
+    .stat:nth-child(2) strong { color: #e0569a; }
+    .stat:nth-child(3) strong { color: #18a888; }
+    .stat span { font-size: .86rem; font-weight: 700; color: var(--muted); }
+
+    main { padding: 88px 0; }
+    .section { margin-bottom: 100px; }
+    .section-heading { max-width: 760px; margin-bottom: 34px; }
+    .section-label {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 2px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--mint);
+      font-weight: 900;
+      letter-spacing: .12em;
+      font-size: .76rem;
+    }
+    h2 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.25; letter-spacing: -.02em; }
+    .section-heading > p:last-child { color: var(--muted); margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .feature {
+      position: relative;
+      padding: 28px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border: var(--line);
+      border-radius: 16px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      background: var(--mint);
+    }
+    .feature:nth-child(2) .feature-icon { background: var(--orange); color: var(--paper); }
+    .feature:nth-child(3) .feature-icon { background: var(--yellow); }
+    .feature:nth-child(4) .feature-icon { background: var(--pink); }
+    .feature h3 { margin: 0 0 8px; font-size: 1.32rem; }
+    .feature p { margin: 0; color: var(--muted); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .step {
+      padding: 0 0 22px;
+      overflow: hidden;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .step-media {
+      display: grid;
+      place-items: end center;
+      height: 300px;
+      overflow: hidden;
+      border-bottom: var(--line);
+      background-color: var(--step-bg, var(--mint));
+      background-image: radial-gradient(rgba(255,255,255,.45) 20%, transparent 22%);
+      background-size: 30px 30px;
+    }
+    .step-media img {
+      width: 66%;
+      margin-bottom: -46%;
+      border: 3px solid var(--ink);
+      border-radius: 22px 22px 0 0;
+    }
+    .step small {
+      display: inline-block;
+      margin: 18px 20px 0;
+      padding: 1px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-weight: 900;
+      font-size: .74rem;
+    }
+    .step h3 { margin: 8px 20px 6px; font-size: 1.12rem; }
+    .step p { margin: 0 20px; color: var(--muted); font-size: .9rem; font-weight: 500; }
+
+    .ai-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(30px, 6vw, 70px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 56px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background-color: var(--lavender);
+      background-image: radial-gradient(rgba(255,255,255,.28) 20%, transparent 22%);
+      background-size: 36px 36px;
+      box-shadow: var(--pop);
+    }
+    .ai-panel h2 { color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .ai-copy p { margin: 16px 0 0; padding: 16px 18px; border: var(--line); border-radius: 18px; background: var(--paper); font-weight: 600; }
+    .ai-copy small { display: block; margin-top: 12px; font-weight: 700; color: var(--paper); }
+    .ai-shots { display: flex; justify-content: center; gap: 18px; }
+    .ai-shots img { width: min(46%, 230px); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 5px 5px 0 var(--ink); }
+    .ai-shots img:last-child { transform: translateY(26px); }
+
+    .gallery { display: flex; gap: 20px; overflow-x: auto; padding: 4px 4px 22px; scroll-snap-type: x mandatory; }
+    figure {
+      flex: 0 0 min(72vw, 260px);
+      margin: 0;
+      padding: 8px;
+      border: var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: 5px 5px 0 var(--ink);
+      scroll-snap-align: start;
+    }
+    figure img { width: 100%; aspect-ratio: 739 / 1599; object-fit: cover; border-radius: 15px; }
+    figcaption { padding: 10px 4px 2px; text-align: center; font-size: .84rem; font-weight: 800; }
+
+    .plan {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 30px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--yellow);
+      box-shadow: var(--pop);
+    }
+    .plan-mark { display: grid; place-items: center; width: 64px; height: 64px; border: var(--line); border-radius: 50%; background: var(--paper); font-size: 1.9rem; }
+    .plan h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .plan p { margin: 6px 0 0; font-weight: 600; }
+
+    .download-cta {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+      padding: clamp(26px, 5vw, 46px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background-color: var(--orange);
+      background-image: radial-gradient(rgba(255,255,255,.25) 20%, transparent 22%);
+      background-size: 34px 34px;
+      box-shadow: var(--pop);
+    }
+    .download-icon { width: 92px; height: 92px; border: var(--line); border-radius: 24px; box-shadow: 4px 4px 0 var(--ink); }
+    .download-copy h2 { font-size: clamp(1.5rem, 3.2vw, 2.4rem); color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .download-copy p { margin: 8px 0 0; font-weight: 700; }
+    .download-cta .button { background: var(--paper); white-space: nowrap; }
+
+    .support { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .support-card { padding: 28px; border: var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--pop); }
+    .support-card h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .support-card p { color: var(--muted); font-weight: 500; }
+    .text-link { font-weight: 900; color: #c4581b; text-underline-offset: 4px; }
+
+    footer { padding: 30px 0 44px; border-top: var(--line); background: var(--mint-soft); font-weight: 600; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer a { text-underline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { text-align: center; }
+      .app-brand, .actions, .hero-note { justify-content: center; }
+      .hero-visual { min-height: 560px; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ai-panel { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav-links > a:not(:last-child) { display: none; }
+      .statbar { grid-template-columns: 1fr; margin-top: -28px; }
+      .stat + .stat { border-left: 0; border-top: var(--line); }
+      .features, .support, .steps { grid-template-columns: 1fr; }
+      .step-media { height: 340px; }
+      .step-media img { width: 56%; margin-bottom: -40%; }
+      .hero-visual { min-height: 480px; }
+      .hero-shot { width: min(60vw, 250px); }
+      .hero-shot.left, .hero-shot.right { width: min(48vw, 200px); }
+      .plan { grid-template-columns: 1fr; text-align: center; }
+      .plan-mark { margin-inline: auto; }
+      .download-cta { grid-template-columns: 1fr; text-align: center; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
+      main { padding: 64px 0; }
+      .section { margin-bottom: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-shot.main { animation: none; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#flow">使い方</a>
+        <a href="#screenshots">画面</a>
+        <a href="#support">サポート</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="app-brand">
+          <img class="app-icon" src="../image/icon/tangomiru.png" alt="タンゴミルのアプリアイコン" width="84" height="84" />
+          <div><strong>タンゴミル</strong><span>iPhone・iPad対応</span></div>
+        </div>
+        <h1>英文を<wbr />貼るだけで、<br />自分だけの<wbr />単語帳。</h1>
+        <p class="lead">英語ニュースや記事の本文を貼り付けるだけで、<wbr />知らない単語と熟語を抜き出して、<wbr />あなた専用の単語帳と4択クイズを作ります。<wbr />覚えた単語が増えるほど、<wbr />元の英文がすらすら読めるようになります。<wbr /></p>
+        <div class="actions">
+          <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+          <a class="button secondary" href="#features">機能を見る</a>
+        </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>iPhone・iPad対応</li>
+          <li>AIの処理は端末内</li>
+          <li>辞書内蔵でどの端末でも使える</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <svg class="sparkle one" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffe65a" stroke="#2b2350" stroke-width="7" stroke-linejoin="round"/></svg>
+        <svg class="sparkle two" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffffff" stroke="#2b2350" stroke-width="7" stroke-linejoin="round"/></svg>
+        <img class="hero-shot left" src="../image/Tangomiru/screen_review.jpg" alt="英文から抜き出した単語と意味の一覧" width="739" height="1606" />
+        <img class="hero-shot right" src="../image/Tangomiru/screen_reading.jpg" alt="覚えていない単語が色分けされた読解モード" width="739" height="1606" />
+        <img class="hero-shot main" src="../image/Tangomiru/screen_quiz.jpg" alt="英単語の意味を4つから選ぶクイズ画面" width="739" height="1606" />
+      </div>
+    </div>
+  </header>
+
+  <div class="statbar wrap" aria-label="アプリの特徴">
+    <div class="stat"><strong>コピペで完成</strong><span>英文から単語帳を自動作成</span></div>
+    <div class="stat"><strong>1問10秒</strong><span>テンポよく解ける4択クイズ</span></div>
+    <div class="stat"><strong>5段階</strong><span>単語ごとの習得度</span></div>
+  </div>
+
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-heading">
+        <p class="section-label">FEATURES</p>
+        <h2>読みたい英文が、<wbr />そのまま教材に。</h2>
+        <p>市販の単語帳ではなく、あなたが今読みたい英文から単語を覚えます。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">A</div>
+          <h3>貼るだけで単語帳</h3>
+          <p>中学レベルの基本語を除いて、覚えるべき単語と熟語だけを抜き出します。意味は、その英文の中で使われている意味を表示します。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">4</div>
+          <h3>テンポよく4択クイズ</h3>
+          <p>英単語を見て、日本語の意味を4つから選びます。すばやく正解した単語は早く「覚えた」に、時間がかかった単語はもう一度出題します。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">%</div>
+          <h3>習得度がひと目でわかる</h3>
+          <p>単語ごとに「覚えた」「うろ覚え」「苦手」「超苦手」「未学習」で管理。英文ごとの習得率で、どれくらい読めるようになったかがわかります。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">読</div>
+          <h3>読解モードで元の英文へ</h3>
+          <p>まだ覚えていない単語だけを色分けして表示。単語をタップすると、すぐに意味を確認できます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="section-heading">
+        <p class="section-label">HOW TO USE</p>
+        <h2>貼る、<wbr />解く、<wbr />読める。</h2>
+        <p>英文を見つけてから読めるようになるまで、4つのステップです。</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--mint)"><img src="../image/Tangomiru/screen_review.jpg" alt="抽出した単語の一覧" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 1</small><h3>英文を貼り付ける</h3><p>記事の本文をコピーして貼るだけ。単語と熟語を自動で抜き出します。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--orange)"><img src="../image/Tangomiru/screen_quiz.jpg" alt="4択クイズ" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 2</small><h3>クイズで覚える</h3><p>覚えていない単語から優先して出題。間違えた単語はその場で復習できます。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--yellow)"><img src="../image/Tangomiru/screen_detail.jpg" alt="習得率と内訳" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 3</small><h3>成長を確かめる</h3><p>習得率と内訳で、どの単語が身についたかがわかります。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--pink)"><img src="../image/Tangomiru/screen_reading.jpg" alt="読解モード" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 4</small><h3>元の英文を読む</h3><p>読解モードで、覚えていない単語だけを確認しながら読み進めます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section ai-panel" aria-labelledby="ai-heading">
+      <div class="ai-copy">
+        <p class="section-label">APPLE INTELLIGENCE</p>
+        <h2 id="ai-heading">対応端末なら、<br />もっと<wbr />深く読める。</h2>
+        <p>1文ずつ和訳と解説を表示して、文の構造や文法のポイントを学べます。英文の内容を問う「内容理解クイズ」では、答えの根拠になる英文もハイライトします。</p>
+        <small>※AI の処理はすべて端末内で行い、入力した英文が外部に送信されることはありません。非対応端末でも、内蔵の辞書で単語帳とクイズを使えます。</small>
+      </div>
+      <div class="ai-shots">
+        <img src="../image/Tangomiru/screen_study.jpg" alt="1文ずつ和訳と解説を表示する画面" loading="lazy" width="739" height="1606" />
+        <img src="../image/Tangomiru/screen_comprehension.jpg" alt="内容理解クイズで根拠の英文をハイライトした画面" loading="lazy" width="739" height="1606" />
+      </div>
+    </section>
+
+    <section class="section" id="screenshots">
+      <div class="section-heading">
+        <p class="section-label">SCREENSHOTS</p>
+        <h2>タンゴミルの画面</h2>
+        <p>横にスクロールして、すべての画面を見られます。</p>
+      </div>
+      <div class="gallery" aria-label="タンゴミルのスクリーンショット">
+        <figure><img src="../image/Tangomiru/01_review.jpg" alt="英文を貼るだけで単語帳が完成" loading="lazy" width="739" height="1599" /><figcaption>単語帳を自動作成</figcaption></figure>
+        <figure><img src="../image/Tangomiru/02_quiz.jpg" alt="4択クイズでサクサク暗記" loading="lazy" width="739" height="1599" /><figcaption>4択クイズ</figcaption></figure>
+        <figure><img src="../image/Tangomiru/03_detail.jpg" alt="習得率で成長が見える" loading="lazy" width="739" height="1599" /><figcaption>習得率と内訳</figcaption></figure>
+        <figure><img src="../image/Tangomiru/04_reading.jpg" alt="覚えていない単語が色でわかる" loading="lazy" width="739" height="1599" /><figcaption>読解モード</figcaption></figure>
+        <figure><img src="../image/Tangomiru/05_study.jpg" alt="1文ずつ和訳と解説" loading="lazy" width="739" height="1599" /><figcaption>1文ずつ学ぶ</figcaption></figure>
+        <figure><img src="../image/Tangomiru/06_comprehension.jpg" alt="内容理解クイズで読めたかチェック" loading="lazy" width="739" height="1599" /><figcaption>内容理解クイズ</figcaption></figure>
+        <figure><img src="../image/Tangomiru/07_library.jpg" alt="好きな英文をどんどん教材に" loading="lazy" width="739" height="1599" /><figcaption>英文ライブラリ</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section plan" aria-labelledby="plan-heading">
+      <div class="plan-mark" aria-hidden="true">👑</div>
+      <div>
+        <h2 id="plan-heading">広告なしプラン<wbr />（月額）</h2>
+        <p>アプリ内の広告がすべて表示されなくなる、自動更新のサブスクリプションです。App Store のアカウント設定から、いつでも管理・解約できます。</p>
+      </div>
+    </section>
+
+    <section class="download-cta" aria-label="タンゴミルをダウンロード">
+      <img class="download-icon" src="../image/icon/tangomiru.png" alt="" width="92" height="92" />
+      <div class="download-copy"><h2>読みたい英文から、<wbr />今日の単語を。</h2><p>英文を貼るだけで、自分だけの単語帳。</p></div>
+      <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+    </section>
+
+    <section class="support" id="support" aria-label="サポート情報">
+      <article class="support-card">
+        <h2>お問い合わせ</h2>
+        <p>ご意見・ご要望、不具合のご報告を受け付けています。</p>
+        <a class="text-link" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせる</a>
+      </article>
+      <article class="support-card">
+        <h2>プライバシー</h2>
+        <p>学習記録は端末内にのみ保存します。広告の配信に関する情報の取り扱いは、タンゴミルのプライバシーポリシーをご覧ください。</p>
+        <a class="text-link" href="../privacy-tangomiru.html">プライバシーポリシーを読む</a>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row wrap">
+      <span>© 2026 Harumi Sagawa — Apps</span>
+      <a href="../index.html">アプリ一覧へ戻る</a>
+    </div>
+  </footer>
+</body>
+</html>
