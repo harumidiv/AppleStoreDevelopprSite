@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="くっつけは、じぶんの写真を切り抜いて遊ぶ落ちものパズルです。同じ写真同士がくっつくと次の写真に進化。家族やペット、推しの写真で、自分だけの進化セットを作れるiPhone・iPadアプリです。" />
+  <meta name="theme-color" content="#ade8c2" />
+  <meta property="og:title" content="くっつけ - 写真がくっついて進化する落ちものパズル" />
+  <meta property="og:description" content="じぶんの写真を切り抜いて並べるだけ。同じ写真同士がくっつくと進化して、どんどん大きく育ちます。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/kuttuke.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/Kuttuke/01_game.jpg" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/kuttuke.html" />
+  <title>くっつけ - 写真がくっついて進化する落ちものパズル</title>
+  <style>
+    :root {
+      color-scheme: light;
+      /* アプリと同じ配色 */
+      --mint: #ade8c2;
+      --sky: #b8dbfa;
+      --bubble: rgba(255, 255, 255, .45);
+      --orange: #ff6b33;
+      --pink: #f05779;
+      --purple: #7a5cdb;
+      --yellow: #ffd140;
+      --ink: #1b1f20;
+      --muted: #545b58;
+      --paper: #ffffff;
+      --cream: #faf4e3;
+      --radius: 26px;
+      --line: 3px solid var(--ink);
+      --pop: 6px 6px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: ui-rounded, "Hiragino Maru Gothic ProN", system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.75;
+    }
+    a { color: inherit; }
+    /* 見出しは言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    h1, h2, h3, .stat strong, .lead { word-break: keep-all; overflow-wrap: anywhere; }
+    img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    /* ヒーロー：アイコンと同じミント〜水色のグラデーションに泡 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 88% 8%, var(--bubble) 0 19%, transparent 19.2%),
+        radial-gradient(circle at 6% 96%, rgba(255,255,255,.3) 0 14%, transparent 14.2%),
+        linear-gradient(135deg, var(--mint), var(--sky));
+      border-bottom: var(--line);
+    }
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links > a { text-decoration: none; font-size: .86rem; font-weight: 800; }
+    .nav-links > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .8fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+      padding: 40px 0 84px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .app-icon {
+      width: 84px;
+      height: 84px;
+      border: var(--line);
+      border-radius: 22px;
+      box-shadow: var(--pop);
+    }
+    .app-brand strong { display: block; font-size: 1.4rem; }
+    .app-brand span { display: block; font-size: .86rem; font-weight: 700; }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5.4vw, 4.4rem);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--paper);
+      -webkit-text-stroke: 2px var(--ink);
+      paint-order: stroke fill;
+      text-shadow: 5px 5px 0 var(--ink);
+    }
+    h1 em { font-style: normal; color: var(--yellow); }
+    .lead {
+      display: inline-block;
+      max-width: 640px;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--pop);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 600;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      border: var(--line);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+    .button.primary { background: var(--orange); color: var(--paper); }
+    .button.secondary { background: var(--paper); }
+    .button.disabled { background: var(--yellow); cursor: default; }
+    .button.disabled:hover { transform: none; box-shadow: 4px 4px 0 var(--ink); }
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .hero-note li {
+      padding: 4px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .hero-visual { position: relative; min-height: 640px; }
+    .hero-shot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(64%, 300px);
+      border: 4px solid var(--ink);
+      border-radius: 34px;
+      box-shadow: 8px 8px 0 var(--ink);
+      background: var(--paper);
+    }
+    .hero-shot.main { z-index: 3; transform: translate(-50%, -50%) rotate(2deg); animation: float 6s ease-in-out infinite; }
+    .hero-shot.left { z-index: 1; width: min(54%, 250px); transform: translate(-96%, -44%) rotate(-9deg); }
+    .hero-shot.right { z-index: 2; width: min(54%, 250px); transform: translate(-4%, -44%) rotate(9deg); }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(2deg); }
+      50% { transform: translate(-50%, calc(-50% - 12px)) rotate(0deg); }
+    }
+    .sparkle { position: absolute; z-index: 4; width: 54px; height: 54px; }
+    .sparkle.one { top: 6%; left: 4%; }
+    .sparkle.two { right: 2%; bottom: 10%; width: 42px; height: 42px; }
+
+    .statbar {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: -36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .stat { padding: 22px; text-align: center; }
+    .stat + .stat { border-left: var(--line); }
+    .stat strong { display: block; font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.2; }
+    .stat:nth-child(1) strong { color: var(--orange); }
+    .stat:nth-child(2) strong { color: var(--pink); }
+    .stat:nth-child(3) strong { color: var(--purple); }
+    .stat span { font-size: .86rem; font-weight: 700; color: var(--muted); }
+
+    main { padding: 88px 0; }
+    .section { margin-bottom: 100px; }
+    .section-heading { max-width: 760px; margin-bottom: 34px; }
+    .section-label {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 2px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--mint);
+      font-weight: 900;
+      letter-spacing: .12em;
+      font-size: .76rem;
+    }
+    h2 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.25; letter-spacing: -.02em; }
+    .section-heading > p:last-child { color: var(--muted); margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .feature {
+      position: relative;
+      padding: 28px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border: var(--line);
+      border-radius: 50%;
+      font-size: 1.5rem;
+      background: var(--mint);
+    }
+    .feature:nth-child(2) .feature-icon { background: var(--orange); }
+    .feature:nth-child(3) .feature-icon { background: var(--yellow); }
+    .feature:nth-child(4) .feature-icon { background: var(--pink); }
+    .feature h3 { margin: 0 0 8px; font-size: 1.32rem; }
+    .feature p { margin: 0; color: var(--muted); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .step {
+      padding: 0 0 22px;
+      overflow: hidden;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .step-media {
+      display: grid;
+      place-items: end center;
+      height: 300px;
+      overflow: hidden;
+      border-bottom: var(--line);
+      background-color: var(--step-bg, var(--mint));
+      background-image: radial-gradient(rgba(255,255,255,.45) 20%, transparent 22%);
+      background-size: 30px 30px;
+    }
+    .step-media img {
+      width: 66%;
+      margin-bottom: -46%;
+      border: 3px solid var(--ink);
+      border-radius: 22px 22px 0 0;
+    }
+    .step small {
+      display: inline-block;
+      margin: 18px 20px 0;
+      padding: 1px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-weight: 900;
+      font-size: .74rem;
+    }
+    .step h3 { margin: 8px 20px 6px; font-size: 1.12rem; }
+    .step p { margin: 0 20px; color: var(--muted); font-size: .9rem; font-weight: 500; }
+
+    /* ランキングとボーナスの紹介 */
+    .rank-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(30px, 6vw, 70px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 56px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 90% 12%, rgba(255,255,255,.35) 0 16%, transparent 16.2%),
+        linear-gradient(135deg, #ffd96b, #ff9a6b);
+      box-shadow: var(--pop);
+    }
+    .rank-panel h2 { color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .rank-copy p { margin: 16px 0 0; padding: 16px 18px; border: var(--line); border-radius: 18px; background: var(--paper); font-weight: 600; }
+    .rank-copy small { display: block; margin-top: 12px; font-weight: 700; }
+    .rank-shots { display: flex; justify-content: center; gap: 18px; }
+    .rank-shots img { width: min(46%, 230px); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 5px 5px 0 var(--ink); }
+    .rank-shots img:last-child { transform: translateY(26px); }
+
+    .gallery { display: flex; gap: 20px; overflow-x: auto; padding: 4px 4px 22px; scroll-snap-type: x mandatory; }
+    figure {
+      flex: 0 0 min(72vw, 260px);
+      margin: 0;
+      padding: 8px;
+      border: var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: 5px 5px 0 var(--ink);
+      scroll-snap-align: start;
+    }
+    figure img { width: 100%; aspect-ratio: 739 / 1605; object-fit: cover; border-radius: 15px; }
+    figcaption { padding: 10px 4px 2px; text-align: center; font-size: .84rem; font-weight: 800; }
+
+    .sound {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 30px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--sky);
+      box-shadow: var(--pop);
+    }
+    .sound-mark { display: grid; place-items: center; width: 64px; height: 64px; border: var(--line); border-radius: 50%; background: var(--paper); font-size: 1.9rem; }
+    .sound h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .sound p { margin: 6px 0 0; font-weight: 600; }
+
+    .download-cta {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+      padding: clamp(26px, 5vw, 46px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background-color: var(--pink);
+      background-image: radial-gradient(rgba(255,255,255,.25) 20%, transparent 22%);
+      background-size: 34px 34px;
+      box-shadow: var(--pop);
+    }
+    .download-icon { width: 92px; height: 92px; border: var(--line); border-radius: 24px; box-shadow: 4px 4px 0 var(--ink); }
+    .download-copy h2 { font-size: clamp(1.5rem, 3.2vw, 2.4rem); color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .download-copy p { margin: 8px 0 0; font-weight: 700; color: var(--paper); }
+    .download-cta .button { background: var(--paper); white-space: nowrap; }
+    .download-cta .button.disabled { background: var(--yellow); }
+
+    .support { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .support-card { padding: 28px; border: var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--pop); }
+    .support-card h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .support-card p { color: var(--muted); font-weight: 500; }
+    .text-link { font-weight: 900; color: #c4451b; text-underline-offset: 4px; }
+
+    footer { padding: 30px 0 44px; border-top: var(--line); background: var(--mint); font-weight: 600; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer a { text-underline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { text-align: center; }
+      .app-brand, .actions, .hero-note { justify-content: center; }
+      .hero-visual { min-height: 560px; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rank-panel { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav-links > a:not(:last-child) { display: none; }
+      .statbar { grid-template-columns: 1fr; margin-top: -28px; }
+      .stat + .stat { border-left: 0; border-top: var(--line); }
+      .features, .support, .steps { grid-template-columns: 1fr; }
+      .step-media { height: 340px; }
+      .step-media img { width: 56%; margin-bottom: -40%; }
+      .hero-visual { min-height: 480px; }
+      .hero-shot { width: min(60vw, 250px); }
+      .hero-shot.left, .hero-shot.right { width: min(48vw, 200px); }
+      .sound { grid-template-columns: 1fr; text-align: center; }
+      .sound-mark { margin-inline: auto; }
+      .download-cta { grid-template-columns: 1fr; text-align: center; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
+      main { padding: 64px 0; }
+      .section { margin-bottom: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-shot.main { animation: none; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#flow">遊び方</a>
+        <a href="#screenshots">画面</a>
+        <a href="#support">サポート</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="app-brand">
+          <img class="app-icon" src="../image/icon/kuttuke.png" alt="くっつけのアプリアイコン" width="84" height="84" />
+          <div><strong>くっつけ</strong><span>iPhone・iPad対応</span></div>
+        </div>
+        <h1>じぶんの<wbr />写真が、<br /><em>くっついて</em><wbr />進化！</h1>
+        <p class="lead">写真から好きなものを切り抜いて、<wbr />小さい順に並べるだけ。<wbr />同じ写真同士がくっつくと、<wbr />次の写真に進化してどんどん大きく育つ<wbr />落ちものパズルです。<wbr /></p>
+        <div class="actions">
+          <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+          <a class="button secondary" href="#features">特徴を見る</a>
+        </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>iPhone・iPad対応</li>
+          <li>じぶんの写真で遊べる</li>
+          <li>Game Centerランキング</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <svg class="sparkle one" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffd140" stroke="#1b1f20" stroke-width="7" stroke-linejoin="round"/></svg>
+        <svg class="sparkle two" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffffff" stroke="#1b1f20" stroke-width="7" stroke-linejoin="round"/></svg>
+        <img class="hero-shot left" src="../image/Kuttuke/screen_editor.jpg" alt="写真を小さい順に並べる進化セットの編集画面" width="739" height="1605" />
+        <img class="hero-shot right" src="../image/Kuttuke/screen_result.jpg" alt="ランクインを紙吹雪で祝う結果画面" width="739" height="1605" />
+        <img class="hero-shot main" src="../image/Kuttuke/screen_game.jpg" alt="切り抜いた写真が積み重なったプレイ画面" width="739" height="1605" />
+      </div>
+    </div>
+  </header>
+
+  <div class="statbar wrap" aria-label="アプリの特徴">
+    <div class="stat"><strong>6〜11枚</strong><span>好きな写真で進化セット</span></div>
+    <div class="stat"><strong>個数別</strong><span>Game Centerランキング</span></div>
+    <div class="stat"><strong>コードで共有</strong><span>友達と同じステージで遊べる</span></div>
+  </div>
+
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-heading">
+        <p class="section-label">FEATURES</p>
+        <h2>あなたの写真が、<wbr />そのままゲームに。</h2>
+        <p>家族、ペット、推し、旅の思い出。お気に入りの写真が、くっついて育つパズルになります。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">📸</div>
+          <h3>写真を切り抜いて素材に</h3>
+          <p>写真の中の人や物を長押しして切り抜くだけ。一度切り抜いた素材は保存され、ほかのステージでも何度でも使えます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🔗</div>
+          <h3>くっつけて大きく育てる</h3>
+          <p>同じ写真同士がぶつかると、次の写真に進化します。最終形態同士がくっつくと、キラッと消えてボーナス点！</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🏆</div>
+          <h3>個数別のランキング</h3>
+          <p>使う写真の数（6〜11個）ごとにGame Centerのランキングを用意。ランクインすると、順位と紙吹雪でお祝いします。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">💌</div>
+          <h3>友達にステージをシェア</h3>
+          <p>作ったステージは8文字のコードで友達に送れます。受け取った友達も、同じ写真と進化の音で遊べます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="section-heading">
+        <p class="section-label">HOW TO PLAY</p>
+        <h2>切り抜く、<wbr />並べる、<wbr />くっつける。</h2>
+        <p>写真を選んでから遊ぶまで、4つのステップです。</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--mint)"><img src="../image/Kuttuke/screen_editor.jpg" alt="進化セットの編集画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 1</small><h3>写真を切り抜く</h3><p>写真を選んで、使いたい被写体を長押しで切り抜きます。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--orange)"><img src="../image/Kuttuke/screen_home.jpg" alt="作ったステージが並ぶホーム画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 2</small><h3>小さい順に並べる</h3><p>6〜11個の写真を進化の順番に並べれば、ステージの完成です。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--yellow)"><img src="../image/Kuttuke/screen_game.jpg" alt="写真を落として遊ぶプレイ画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 3</small><h3>落として、くっつける</h3><p>指を左右に動かして離すと落ちます。同じ写真同士で進化させましょう。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--pink)"><img src="../image/Kuttuke/screen_share.jpg" alt="ステージの共有コードを表示した画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 4</small><h3>友達とシェア</h3><p>スコアの画像をSNSにシェアしたり、ステージをコードで送ったりできます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section rank-panel" aria-labelledby="rank-heading">
+      <div class="rank-copy">
+        <p class="section-label">RANKING</p>
+        <h2 id="rank-heading">全国の<wbr />ライバルと、<br />スコアで勝負。</h2>
+        <p>写真の数ごとに分かれたGame Centerのランキングで、全国のプレイヤーと競えます。自己ベストを更新してランクインすると、結果画面に順位が表示されます。</p>
+        <small>※ランキングに参加するには、Game Centerへのサインインが必要です。</small>
+      </div>
+      <div class="rank-shots">
+        <img src="../image/Kuttuke/screen_game.jpg" alt="写真が積み重なったプレイ画面" loading="lazy" width="739" height="1605" />
+        <img src="../image/Kuttuke/screen_result.jpg" alt="全国1位にランクインした結果画面" loading="lazy" width="739" height="1605" />
+      </div>
+    </section>
+
+    <section class="section" id="screenshots">
+      <div class="section-heading">
+        <p class="section-label">SCREENSHOTS</p>
+        <h2>くっつけの画面</h2>
+        <p>横にスクロールして、すべての画面を見られます。</p>
+      </div>
+      <div class="gallery" aria-label="くっつけのスクリーンショット">
+        <figure><img src="../image/Kuttuke/01_game.jpg" alt="写真がくっついて進化！" loading="lazy" width="739" height="1605" /><figcaption>写真がくっついて進化</figcaption></figure>
+        <figure><img src="../image/Kuttuke/02_editor.jpg" alt="好きな写真で進化セット" loading="lazy" width="739" height="1605" /><figcaption>進化セットを作る</figcaption></figure>
+        <figure><img src="../image/Kuttuke/03_result.jpg" alt="個数別ランキングで勝負" loading="lazy" width="739" height="1605" /><figcaption>個数別ランキング</figcaption></figure>
+        <figure><img src="../image/Kuttuke/04_share.jpg" alt="作ったステージを友達へ" loading="lazy" width="739" height="1605" /><figcaption>友達にシェア</figcaption></figure>
+        <figure><img src="../image/Kuttuke/05_home.jpg" alt="いくつでも作って遊べる" loading="lazy" width="739" height="1605" /><figcaption>ステージを集める</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section sound" aria-labelledby="sound-heading">
+      <div class="sound-mark" aria-hidden="true">🎤</div>
+      <div>
+        <h2 id="sound-heading">進化の音も、<wbr />じぶんの声で。</h2>
+        <p>「高度な詳細設定」から、写真ごとに進化したときの音を設定できます。その場で録音しても、音声ファイルを選んでもOK。設定しない写真では、標準の「ぽよん」が鳴ります。</p>
+      </div>
+    </section>
+
+    <section class="download-cta" aria-label="くっつけをダウンロード">
+      <img class="download-icon" src="../image/icon/kuttuke.png" alt="" width="92" height="92" />
+      <div class="download-copy"><h2>お気に入りの写真で、<wbr />くっつけよう。</h2><p>じぶんの写真で遊ぶ落ちものパズル。</p></div>
+      <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+    </section>
+
+    <section class="support" id="support" aria-label="サポート情報">
+      <article class="support-card">
+        <h2>お問い合わせ</h2>
+        <p>ご意見・ご要望、不具合のご報告を受け付けています。</p>
+        <a class="text-link" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせる</a>
+      </article>
+      <article class="support-card">
+        <h2>プライバシー</h2>
+        <p>切り抜いた写真やステージは端末内に保存します。友達にステージを共有したときだけ、写真と音声を iCloud にアップロードします。詳しくはプライバシーポリシーをご覧ください。</p>
+        <a class="text-link" href="../privacy.html">プライバシーポリシーを読む</a>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row wrap">
+      <span>© 2026 Harumi Sagawa — Apps</span>
+      <a href="../index.html">アプリ一覧へ戻る</a>
+    </div>
+  </footer>
+</body>
+</html>
