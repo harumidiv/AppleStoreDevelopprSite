@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="のっけタワーは、写真から切り抜いた被写体を積み上げていくタワーゲームです。ペットや食べもの、推しのグッズを切り抜いて、どこまで高く積めるかチャレンジ。作ったステージはコードで友達に共有できるiPhone・iPadアプリです。" />
+  <meta name="theme-color" content="#bde6fa" />
+  <meta property="og:title" content="のっけタワー - 写真が、タワーになる。" />
+  <meta property="og:description" content="写真から切り抜いた被写体を落として、回して、積み上げる。お気に入りの写真で遊べるタワーゲームです。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/imageTower.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/ImageTower/01_tower.jpg" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/imageTower.html" />
+  <title>のっけタワー - 写真が、タワーになる。</title>
+  <style>
+    :root {
+      color-scheme: light;
+      /* アプリと同じ配色 */
+      --mint: #8ad9ad;
+      --sky: #bde6fa;
+      --sky-deep: #7ac7ed;
+      --bubble: rgba(255, 255, 255, .5);
+      --orange: #ff6347;
+      --pink: #f0577a;
+      --purple: #7a5cdb;
+      --yellow: #ffc73d;
+      --ink: #1f292e;
+      --muted: #616e70;
+      --paper: #fffef8;
+      --cream: #f6f2e9;
+      --radius: 26px;
+      --line: 3px solid var(--ink);
+      --pop: 6px 6px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: ui-rounded, "Hiragino Maru Gothic ProN", system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.75;
+    }
+    a { color: inherit; }
+    /* 見出しは言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    h1, h2, h3, .stat strong, .lead { word-break: keep-all; overflow-wrap: anywhere; }
+    img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    /* ヒーロー：ゲーム画面と同じ空色に太陽と雲 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 90% 10%, var(--yellow) 0 9%, transparent 9.2%),
+        radial-gradient(circle at 78% 30%, var(--bubble) 0 7%, transparent 7.2%),
+        radial-gradient(circle at 4% 92%, var(--bubble) 0 14%, transparent 14.2%),
+        linear-gradient(180deg, var(--sky), #e8f6fd);
+      border-bottom: var(--line);
+    }
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links > a { text-decoration: none; font-size: .86rem; font-weight: 800; }
+    .nav-links > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .8fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+      padding: 40px 0 84px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .app-icon {
+      width: 84px;
+      height: 84px;
+      border: var(--line);
+      border-radius: 22px;
+      box-shadow: var(--pop);
+    }
+    .app-brand strong { display: block; font-size: 1.4rem; }
+    .app-brand span { display: block; font-size: .86rem; font-weight: 700; }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5.4vw, 4.4rem);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--paper);
+      -webkit-text-stroke: 2px var(--ink);
+      paint-order: stroke fill;
+      text-shadow: 5px 5px 0 var(--ink);
+    }
+    h1 em { font-style: normal; color: var(--yellow); }
+    .lead {
+      display: inline-block;
+      max-width: 640px;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--pop);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 600;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      border: var(--line);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+    .button.primary { background: var(--orange); color: var(--paper); }
+    .button.secondary { background: var(--paper); }
+    .button.disabled { background: var(--yellow); cursor: default; }
+    .button.disabled:hover { transform: none; box-shadow: 4px 4px 0 var(--ink); }
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .hero-note li {
+      padding: 4px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .hero-visual { position: relative; min-height: 640px; }
+    .hero-shot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(64%, 300px);
+      border: 4px solid var(--ink);
+      border-radius: 34px;
+      box-shadow: 8px 8px 0 var(--ink);
+      background: var(--paper);
+    }
+    .hero-shot.main { z-index: 3; transform: translate(-50%, -50%) rotate(2deg); animation: float 6s ease-in-out infinite; }
+    .hero-shot.left { z-index: 1; width: min(54%, 250px); transform: translate(-96%, -44%) rotate(-9deg); }
+    .hero-shot.right { z-index: 2; width: min(54%, 250px); transform: translate(-4%, -44%) rotate(9deg); }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(2deg); }
+      50% { transform: translate(-50%, calc(-50% - 12px)) rotate(0deg); }
+    }
+    .sparkle { position: absolute; z-index: 4; width: 54px; height: 54px; }
+    .sparkle.one { top: 6%; left: 4%; }
+    .sparkle.two { right: 2%; bottom: 10%; width: 42px; height: 42px; }
+
+    .statbar {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: -36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .stat { padding: 22px; text-align: center; }
+    .stat + .stat { border-left: var(--line); }
+    .stat strong { display: block; font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.2; }
+    .stat:nth-child(1) strong { color: var(--orange); }
+    .stat:nth-child(2) strong { color: var(--pink); }
+    .stat:nth-child(3) strong { color: var(--purple); }
+    .stat span { font-size: .86rem; font-weight: 700; color: var(--muted); }
+
+    main { padding: 88px 0; }
+    .section { margin-bottom: 100px; }
+    .section-heading { max-width: 760px; margin-bottom: 34px; }
+    .section-label {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 2px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--sky);
+      font-weight: 900;
+      letter-spacing: .12em;
+      font-size: .76rem;
+    }
+    h2 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.25; letter-spacing: -.02em; }
+    .section-heading > p:last-child { color: var(--muted); margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .feature {
+      position: relative;
+      padding: 28px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border: var(--line);
+      border-radius: 50%;
+      font-size: 1.5rem;
+      background: var(--sky);
+    }
+    .feature:nth-child(2) .feature-icon { background: var(--orange); }
+    .feature:nth-child(3) .feature-icon { background: var(--yellow); }
+    .feature:nth-child(4) .feature-icon { background: var(--pink); }
+    .feature h3 { margin: 0 0 8px; font-size: 1.32rem; }
+    .feature p { margin: 0; color: var(--muted); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .step {
+      padding: 0 0 22px;
+      overflow: hidden;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--pop);
+    }
+    .step-media {
+      display: grid;
+      place-items: end center;
+      height: 300px;
+      overflow: hidden;
+      border-bottom: var(--line);
+      background-color: var(--step-bg, var(--sky));
+      background-image: radial-gradient(rgba(255,255,255,.45) 20%, transparent 22%);
+      background-size: 30px 30px;
+    }
+    .step-media img {
+      width: 66%;
+      margin-bottom: -46%;
+      border: 3px solid var(--ink);
+      border-radius: 22px 22px 0 0;
+    }
+    .step small {
+      display: inline-block;
+      margin: 18px 20px 0;
+      padding: 1px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      font-weight: 900;
+      font-size: .74rem;
+    }
+    .step h3 { margin: 8px 20px 6px; font-size: 1.12rem; }
+    .step p { margin: 0 20px; color: var(--muted); font-size: .9rem; font-weight: 500; }
+
+    /* 結果のシェアの紹介 */
+    .rank-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(30px, 6vw, 70px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 56px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 90% 12%, rgba(255,255,255,.35) 0 16%, transparent 16.2%),
+        linear-gradient(135deg, #d9d0fa, #a99bf0);
+      box-shadow: var(--pop);
+    }
+    .rank-panel h2 { color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .rank-copy p { margin: 16px 0 0; padding: 16px 18px; border: var(--line); border-radius: 18px; background: var(--paper); font-weight: 600; }
+    .rank-copy small { display: block; margin-top: 12px; font-weight: 700; }
+    .rank-shots { display: flex; justify-content: center; gap: 18px; }
+    .rank-shots img { width: min(46%, 230px); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 5px 5px 0 var(--ink); }
+    .rank-shots img:last-child { transform: translateY(26px); }
+
+    .gallery { display: flex; gap: 20px; overflow-x: auto; padding: 4px 4px 22px; scroll-snap-type: x mandatory; }
+    figure {
+      flex: 0 0 min(72vw, 260px);
+      margin: 0;
+      padding: 8px;
+      border: var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: 5px 5px 0 var(--ink);
+      scroll-snap-align: start;
+    }
+    figure img { width: 100%; aspect-ratio: 739 / 1605; object-fit: cover; border-radius: 15px; }
+    figcaption { padding: 10px 4px 2px; text-align: center; font-size: .84rem; font-weight: 800; }
+
+
+    .download-cta {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+      padding: clamp(26px, 5vw, 46px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background-color: var(--sky-deep);
+      background-image: radial-gradient(rgba(255,255,255,.25) 20%, transparent 22%);
+      background-size: 34px 34px;
+      box-shadow: var(--pop);
+    }
+    .download-icon { width: 92px; height: 92px; border: var(--line); border-radius: 24px; box-shadow: 4px 4px 0 var(--ink); }
+    .download-copy h2 { font-size: clamp(1.5rem, 3.2vw, 2.4rem); color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .download-copy p { margin: 8px 0 0; font-weight: 700; color: var(--paper); }
+    .download-cta .button { background: var(--paper); white-space: nowrap; }
+    .download-cta .button.disabled { background: var(--yellow); }
+
+    .support { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .support-card { padding: 28px; border: var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--pop); }
+    .support-card h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .support-card p { color: var(--muted); font-weight: 500; }
+    .text-link { font-weight: 900; color: #c4451b; text-underline-offset: 4px; }
+
+    footer { padding: 30px 0 44px; border-top: var(--line); background: var(--sky); font-weight: 600; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer a { text-underline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { text-align: center; }
+      .app-brand, .actions, .hero-note { justify-content: center; }
+      .hero-visual { min-height: 560px; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rank-panel { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav-links > a:not(:last-child) { display: none; }
+      .statbar { grid-template-columns: 1fr; margin-top: -28px; }
+      .stat + .stat { border-left: 0; border-top: var(--line); }
+      .features, .support, .steps { grid-template-columns: 1fr; }
+      .step-media { height: 340px; }
+      .step-media img { width: 56%; margin-bottom: -40%; }
+      .hero-visual { min-height: 480px; }
+      .hero-shot { width: min(60vw, 250px); }
+      .hero-shot.left, .hero-shot.right { width: min(48vw, 200px); }
+      .download-cta { grid-template-columns: 1fr; text-align: center; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
+      main { padding: 64px 0; }
+      .section { margin-bottom: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-shot.main { animation: none; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#flow">遊び方</a>
+        <a href="#screenshots">画面</a>
+        <a href="#support">サポート</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="app-brand">
+          <img class="app-icon" src="../image/icon/imageTower.png" alt="のっけタワーのアプリアイコン" width="84" height="84" />
+          <div><strong>のっけタワー</strong><span>iPhone・iPad対応</span></div>
+        </div>
+        <h1>写真が、<br /><em>タワー</em>に<wbr />なる。</h1>
+        <p class="lead">写真から好きなものを切り抜いて、<wbr />上から落として積み上げるだけ。<wbr />うちの猫、今日のごはん、推しのグッズ。<wbr />お気に入りの写真で、<wbr />どこまで高く積めるかチャレンジしよう。<wbr /></p>
+        <div class="actions">
+          <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+          <a class="button secondary" href="#features">特徴を見る</a>
+        </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>iPhone・iPad対応</li>
+          <li>じぶんの写真で遊べる</li>
+          <li>ステージをコードで共有</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <svg class="sparkle one" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffc73d" stroke="#1f292e" stroke-width="7" stroke-linejoin="round"/></svg>
+        <svg class="sparkle two" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffffff" stroke="#1f292e" stroke-width="7" stroke-linejoin="round"/></svg>
+        <img class="hero-shot left" src="../image/ImageTower/screen_editor.jpg" alt="切り抜いた素材を選んでステージを作る画面" width="739" height="1605" />
+        <img class="hero-shot right" src="../image/ImageTower/screen_result.jpg" alt="積んだ個数を表示するゲーム終了画面" width="739" height="1605" />
+        <img class="hero-shot main" src="../image/ImageTower/screen_game.jpg" alt="切り抜いた写真が積み上がったプレイ画面" width="739" height="1605" />
+      </div>
+    </div>
+  </header>
+
+  <div class="statbar wrap" aria-label="アプリの特徴">
+    <div class="stat"><strong>6〜11個</strong><span>好きな切り抜きでステージ</span></div>
+    <div class="stat"><strong>回して積む</strong><span>バランスを見きわめよう</span></div>
+    <div class="stat"><strong>コードで共有</strong><span>友達と同じステージで遊べる</span></div>
+  </div>
+
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-heading">
+        <p class="section-label">FEATURES</p>
+        <h2>あなたの写真が、<wbr />そのままゲームに。</h2>
+        <p>ペット、食べもの、推しのグッズ、家族の写真。お気に入りの写真が、積み上げて遊ぶタワーになります。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">📸</div>
+          <h3>写真から自動で切り抜き</h3>
+          <p>写真を選ぶだけで、被写体を自動で切り抜けます。1枚の写真から複数の被写体を切り抜くことも、写真アプリでコピーした切り抜きを追加することもできます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🗼</div>
+          <h3>落として、回して、積み上げる</h3>
+          <p>指を左右に動かして離すと落下、右下のボタンで回転。形のちがう写真を、崩さないように積み上げましょう。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🎨</div>
+          <h3>自分だけのステージ</h3>
+          <p>6〜11個の切り抜きを選んで、落ちてくる順番を決めるだけ。「うちの猫タワー」のように名前をつけて保存し、いつでも遊べます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">💌</div>
+          <h3>友達にステージをシェア</h3>
+          <p>作ったステージは8文字のコードで友達に送れます。受け取ったコードを入力すれば、友達のステージでも遊べます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="section-heading">
+        <p class="section-label">HOW TO PLAY</p>
+        <h2>切り抜く、<wbr />並べる、<wbr />積み上げる。</h2>
+        <p>写真を選んでから遊ぶまで、4つのステップです。</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--sky)"><img src="../image/ImageTower/screen_editor.jpg" alt="ステージの作成画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 1</small><h3>写真を切り抜く</h3><p>写真を選んで、使いたい被写体を切り抜きます。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--orange)"><img src="../image/ImageTower/screen_home.jpg" alt="作ったステージが並ぶホーム画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 2</small><h3>ステージを作る</h3><p>6〜11個の切り抜きを選んで順番を決めれば、ステージの完成です。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--yellow)"><img src="../image/ImageTower/screen_game.jpg" alt="写真を落として積み上げるプレイ画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 3</small><h3>落として、積み上げる</h3><p>左右に動かして指を離すと落下。右下のボタンで回転できます。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--purple)"><img src="../image/ImageTower/screen_result.jpg" alt="積んだ個数を表示する結果画面" loading="lazy" width="739" height="1605" /></div>
+          <small>STEP 4</small><h3>結果をシェア</h3><p>積み上げたタワーをスクショでSNSにシェアしたり、ステージをコードで送ったりできます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section rank-panel" aria-labelledby="share-heading">
+      <div class="rank-copy">
+        <p class="section-label">SHARE</p>
+        <h2 id="share-heading">どこまで<wbr />積めた？<br />スクショで<wbr />シェア。</h2>
+        <p>ゲームが終わったら、積み上げたタワー全体をスクリーンショットにして、そのままSNSにシェアできます。自己ベストを更新したら、友達に自慢しよう。</p>
+        <small>※ステージをコードで共有するには、iCloud へのサインインが必要です。</small>
+      </div>
+      <div class="rank-shots">
+        <img src="../image/ImageTower/screen_game.jpg" alt="写真が積み上がったプレイ画面" loading="lazy" width="739" height="1605" />
+        <img src="../image/ImageTower/screen_result.jpg" alt="スクショでシェアボタンがある結果画面" loading="lazy" width="739" height="1605" />
+      </div>
+    </section>
+
+    <section class="section" id="screenshots">
+      <div class="section-heading">
+        <p class="section-label">SCREENSHOTS</p>
+        <h2>のっけタワーの画面</h2>
+        <p>横にスクロールして、すべての画面を見られます。</p>
+      </div>
+      <div class="gallery" aria-label="のっけタワーのスクリーンショット">
+        <figure><img src="../image/ImageTower/01_tower.jpg" alt="写真が、タワーになる。" loading="lazy" width="739" height="1605" /><figcaption>写真がタワーになる</figcaption></figure>
+        <figure><img src="../image/ImageTower/02_create.jpg" alt="好きな写真でステージをつくる" loading="lazy" width="739" height="1605" /><figcaption>ステージをつくる</figcaption></figure>
+        <figure><img src="../image/ImageTower/03_stages.jpg" alt="自分だけのステージをいつでも遊べる" loading="lazy" width="739" height="1605" /><figcaption>マイステージ</figcaption></figure>
+        <figure><img src="../image/ImageTower/04_share.jpg" alt="どこまで積める？結果はスクショでかんたんシェア" loading="lazy" width="739" height="1605" /><figcaption>結果をシェア</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="download-cta" aria-label="のっけタワーをダウンロード">
+      <img class="download-icon" src="../image/icon/imageTower.png" alt="" width="92" height="92" />
+      <div class="download-copy"><h2>お気に入りの写真を、<wbr />積み上げよう。</h2><p>じぶんの写真で遊ぶタワーゲーム。</p></div>
+      <span class="button disabled" aria-disabled="true">App Store 公開準備中</span>
+    </section>
+
+    <section class="support" id="support" aria-label="サポート情報">
+      <article class="support-card">
+        <h2>お問い合わせ</h2>
+        <p>ご意見・ご要望、不具合のご報告を受け付けています。</p>
+        <a class="text-link" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせる</a>
+      </article>
+      <article class="support-card">
+        <h2>プライバシー</h2>
+        <p>切り抜いた写真やステージは端末内に保存します。ステージを共有したときだけ、切り抜き画像とステージ名を iCloud にアップロードします。また、広告の表示に Google AdMob を利用しています。詳しくはプライバシーポリシーをご覧ください。</p>
+        <a class="text-link" href="../privacy.html">プライバシーポリシーを読む</a>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row wrap">
+      <span>© 2026 Harumi Sagawa — Apps</span>
+      <a href="../index.html">アプリ一覧へ戻る</a>
+    </div>
+  </footer>
+</body>
+</html>
