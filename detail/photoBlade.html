@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="フォトブレードは、写真から切り抜いた被写体が回転するバトルコマになるiPhone・iPadゲームです。ペットも推しもコマにして、3Dの物理バトルで辞書から飛び出した文字たちと戦おう。" />
+  <meta name="theme-color" content="#0d0a24" />
+  <meta property="og:title" content="フォトブレード - 写真コマバトル" />
+  <meta property="og:description" content="ペットも推しも切り抜いてコマに！形と色で性能が決まるコマで、文字たちと3Dバトル。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/photoBlade.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/icon/photoBlade.png" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/photoBlade.html" />
+  <title>フォトブレード - 写真コマバトル</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      /* アプリと同じ配色（夜空の紺・アクセントの赤・ゴールド） */
+      --night: #0d0a24;
+      --night-2: #211040;
+      --accent: #ff5266;
+      --gold: #ffd14d;
+      --blue: #4fa8ff;
+      --purple: #9a6bff;
+      --ink: #07051a;
+      --paper: #fffaf2;
+      --text: #f4f1ff;
+      --muted: #b9b2d6;
+      --card: #1b1438;
+      --radius: 26px;
+      --line: 3px solid var(--ink);
+      --pop: 6px 6px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background: var(--night);
+      line-height: 1.75;
+    }
+    a { color: inherit; }
+    /* 見出しは言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    h1, h2, h3, .stat strong, .lead { word-break: keep-all; overflow-wrap: anywhere; }
+    img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    /* ヒーロー：夜空に、ぶつかり合うコマの火花 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 72% 46%, rgba(255, 209, 77, .35) 0 6%, transparent 22%),
+        radial-gradient(circle at 60% 40%, rgba(255, 82, 102, .35) 0, transparent 34%),
+        radial-gradient(circle at 86% 60%, rgba(79, 168, 255, .35) 0, transparent 34%),
+        linear-gradient(180deg, var(--night), var(--night-2));
+      border-bottom: 3px solid var(--gold);
+    }
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links > a { text-decoration: none; font-size: .86rem; font-weight: 800; }
+    .nav-links > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .8fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+      padding: 40px 0 84px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .app-icon {
+      width: 84px;
+      height: 84px;
+      border: 3px solid var(--paper);
+      border-radius: 22px;
+      box-shadow: 5px 5px 0 var(--accent);
+    }
+    .app-brand strong { display: block; font-size: 1.4rem; }
+    .app-brand span { display: block; font-size: .86rem; font-weight: 700; color: var(--muted); }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5.4vw, 4.4rem);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--paper);
+      -webkit-text-stroke: 2px var(--ink);
+      paint-order: stroke fill;
+      text-shadow: 5px 5px 0 var(--accent);
+    }
+    h1 em { font-style: normal; color: var(--gold); }
+    .lead {
+      display: inline-block;
+      max-width: 640px;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 6px 6px 0 var(--accent);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 600;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      border: var(--line);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+    .button.primary { background: var(--accent); color: var(--paper); }
+    .button.secondary { background: var(--paper); color: var(--ink); }
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .hero-note li {
+      padding: 4px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    /* 写真のコマ vs 文字のコマ */
+    .hero-visual { position: relative; min-height: 520px; }
+    .top {
+      position: absolute;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      border: 5px solid var(--paper);
+      border-radius: 50%;
+      box-shadow: 0 0 0 6px var(--ink), 0 0 50px var(--glow);
+    }
+    .top.photo {
+      --glow: rgba(255, 82, 102, .75);
+      left: 0;
+      width: min(58%, 290px);
+      transform: translateY(-62%);
+      background: center / cover url("../image/icon/photoBlade.png");
+      animation: spin 1.6s linear infinite;
+    }
+    .top.letter {
+      --glow: rgba(79, 168, 255, .75);
+      right: 0;
+      width: min(46%, 230px);
+      transform: translateY(-28%);
+      background: radial-gradient(circle, #ffffff 0 30%, #d9ecff 31% 56%, var(--blue) 57%);
+      color: var(--ink);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(4rem, 9vw, 7rem);
+      font-weight: 900;
+      animation: spin-reverse 1.2s linear infinite;
+    }
+    @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
+    @keyframes spin-reverse { from { rotate: 0deg; } to { rotate: -360deg; } }
+    .vs {
+      position: absolute;
+      z-index: 3;
+      top: 47%;
+      left: 54%;
+      transform: translate(-50%, -50%) rotate(-8deg);
+      padding: 4px 18px;
+      border: var(--line);
+      border-radius: 14px;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+      font-weight: 900;
+      box-shadow: var(--pop);
+    }
+    .sparkle { position: absolute; z-index: 4; width: 54px; height: 54px; }
+    .sparkle.one { top: 6%; right: 10%; }
+    .sparkle.two { left: 6%; bottom: 8%; width: 42px; height: 42px; }
+
+    .statbar {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: -36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 6px 6px 0 var(--accent);
+    }
+    .stat { padding: 22px; text-align: center; }
+    .stat + .stat { border-left: var(--line); }
+    .stat strong { display: block; font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.2; }
+    .stat:nth-child(1) strong { color: var(--accent); }
+    .stat:nth-child(2) strong { color: #2f7fd6; }
+    .stat:nth-child(3) strong { color: #7a4fe0; }
+    .stat span { font-size: .86rem; font-weight: 700; color: #5d5878; }
+
+    main { padding: 88px 0; }
+    .section { margin-bottom: 100px; }
+    .section-heading { max-width: 760px; margin-bottom: 34px; }
+    .section-label {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 2px 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 900;
+      letter-spacing: .12em;
+      font-size: .76rem;
+    }
+    h2 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.25; letter-spacing: -.02em; }
+    .section-heading > p:last-child { color: var(--muted); margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .feature {
+      padding: 28px;
+      border: 3px solid var(--paper);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: 6px 6px 0 var(--accent);
+    }
+    .feature:nth-child(even) { box-shadow: 6px 6px 0 var(--blue); }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border: var(--line);
+      border-radius: 50%;
+      font-size: 1.5rem;
+      background: var(--gold);
+    }
+    .feature:nth-child(2) .feature-icon { background: var(--accent); }
+    .feature:nth-child(3) .feature-icon { background: var(--blue); }
+    .feature:nth-child(4) .feature-icon { background: var(--purple); }
+    .feature h3 { margin: 0 0 8px; font-size: 1.32rem; }
+    .feature p { margin: 0; color: var(--muted); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .step {
+      padding: 0 0 22px;
+      overflow: hidden;
+      border: 3px solid var(--paper);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    .step-media {
+      display: grid;
+      place-items: center;
+      height: 160px;
+      border-bottom: 3px solid var(--paper);
+      background-color: var(--step-bg, var(--accent));
+      background-image: radial-gradient(rgba(255,255,255,.3) 20%, transparent 22%);
+      background-size: 30px 30px;
+      font-size: 4rem;
+    }
+    .step small {
+      display: inline-block;
+      margin: 18px 20px 0;
+      padding: 1px 10px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 900;
+      font-size: .74rem;
+    }
+    .step h3 { margin: 8px 20px 6px; font-size: 1.12rem; }
+    .step p { margin: 0 20px; color: var(--muted); font-size: .9rem; font-weight: 500; }
+
+    /* 形と色で決まるステータスの紹介 */
+    .rank-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(30px, 6vw, 70px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 56px);
+      border: 3px solid var(--paper);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 90% 12%, rgba(255,255,255,.12) 0 16%, transparent 16.2%),
+        linear-gradient(135deg, #3a1a6e, #b8324a);
+      box-shadow: 6px 6px 0 var(--gold);
+    }
+    .rank-panel h2 { color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .rank-copy p { margin: 16px 0 0; padding: 16px 18px; border: var(--line); border-radius: 18px; background: var(--paper); color: var(--ink); font-weight: 600; }
+    .stat-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+    .stat-list li {
+      display: grid;
+      grid-template-columns: 7.5em 1fr;
+      gap: 6px 14px;
+      align-items: center;
+      padding: 14px 18px;
+      border: var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 800;
+    }
+    .stat-list small { grid-column: 1 / -1; color: #5d5878; font-weight: 700; }
+    .meter { height: 14px; border: 2px solid var(--ink); border-radius: 999px; background: #e9e4f5; overflow: hidden; }
+    .meter span { display: block; height: 100%; width: var(--value); background: var(--color); }
+
+    .download-cta {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+      padding: clamp(26px, 5vw, 46px);
+      border: 3px solid var(--paper);
+      border-radius: var(--radius);
+      background-color: var(--accent);
+      background-image: radial-gradient(rgba(255,255,255,.2) 20%, transparent 22%);
+      background-size: 34px 34px;
+      box-shadow: 6px 6px 0 var(--gold);
+    }
+    .download-icon { width: 92px; height: 92px; border: var(--line); border-radius: 24px; box-shadow: 4px 4px 0 var(--ink); }
+    .download-copy h2 { font-size: clamp(1.5rem, 3.2vw, 2.4rem); color: var(--paper); -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink); }
+    .download-copy p { margin: 8px 0 0; font-weight: 700; color: var(--paper); }
+    .download-cta .button { background: var(--paper); color: var(--ink); white-space: nowrap; }
+
+    .support { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .support-card { padding: 28px; border: 3px solid var(--paper); border-radius: var(--radius); background: var(--card); }
+    .support-card h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .support-card p { color: var(--muted); font-weight: 500; }
+    .text-link { font-weight: 900; color: var(--gold); text-underline-offset: 4px; }
+
+    footer { padding: 30px 0 44px; border-top: 3px solid var(--gold); background: var(--night-2); font-weight: 600; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer a { text-underline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { text-align: center; }
+      .app-brand, .actions, .hero-note { justify-content: center; }
+      .hero-visual { width: min(100%, 520px); min-height: 440px; margin-inline: auto; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rank-panel { grid-template-columns: 1fr; }
+      .support { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav-links > a:not(:last-child) { display: none; }
+      .statbar { grid-template-columns: 1fr; margin-top: -28px; }
+      .stat + .stat { border-left: 0; border-top: var(--line); }
+      .features, .support, .steps { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 340px; }
+      .download-cta { grid-template-columns: 1fr; text-align: center; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
+      main { padding: 64px 0; }
+      .section { margin-bottom: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .top { animation: none !important; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#flow">遊び方</a>
+        <a href="#stats">ステータス</a>
+        <a href="#support">サポート</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="app-brand">
+          <img class="app-icon" src="../image/icon/photoBlade.png" alt="フォトブレードのアプリアイコン" width="84" height="84" />
+          <div><strong>フォトブレード</strong><span>iPhone・iPad対応</span></div>
+        </div>
+        <h1>写真が、<br /><em>バトルコマ</em>に<wbr />なる。</h1>
+        <p class="lead">ペットも、推しも、<wbr />お気に入りのおもちゃも。<wbr />写真を切り抜くだけで、<wbr />世界にひとつだけのコマが完成。<wbr />3Dの物理バトルで、<wbr />辞書から飛び出した<wbr />文字たちに立ち向かおう。</p>
+        <div class="actions">
+          <a class="button primary" href="https://apps.apple.com/jp/app/id6824405332" target="_blank" rel="noopener">App Storeで見る</a>
+          <a class="button secondary" href="#features">特徴を見る</a>
+        </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>写真を切り抜いてコマに</li>
+          <li>3D物理バトル</li>
+          <li>Game Centerランキング</li>
+        </ul>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <svg class="sparkle one" viewBox="0 0 100 100"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffd14d" stroke="#07051a" stroke-width="7" stroke-linejoin="round"/></svg>
+        <svg class="sparkle two" viewBox="0 0 100 100"><path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" fill="#ffffff" stroke="#07051a" stroke-width="7" stroke-linejoin="round"/></svg>
+        <div class="top photo"></div>
+        <div class="top letter">覇</div>
+        <div class="vs">VS</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="statbar wrap" aria-label="アプリの特徴">
+    <div class="stat"><strong>写真でコマ</strong><span>切り抜くだけで完成</span></div>
+    <div class="stat"><strong>全5章</strong><span>文字の敵とのストーリー</span></div>
+    <div class="stat"><strong>ランダム連戦</strong><span>一本勝負で連勝を競う</span></div>
+  </div>
+
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-heading">
+        <p class="section-label">FEATURES</p>
+        <h2>キミの写真が、<wbr />最強のコマに。</h2>
+        <p>好きな写真を切り抜いて作ったコマ「フォトブレード」で、回転する文字たちとバトルします。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">✂️</div>
+          <h3>写真からコマを作る</h3>
+          <p>iPhoneの写真アプリで被写体を長押しして「コピー」し、貼り付けるだけ。ドラッグ＆ドロップにも対応しています。手元に写真がなくても、アプリ内の写真検索からコマを作れます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🌀</div>
+          <h3>迫力の3D物理バトル</h3>
+          <p>「3, 2, 1, ゴーシュート！」でコマを放ち、ドラッグで操作。ここぞという場面ではRUSHで体当たり。相手をはじき出すか、回転が止まるまで粘るか。毎回ちがう展開が楽しめます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">📖</div>
+          <h3>文字たちとのストーリー</h3>
+          <p>ある日、辞書の中から文字たちが飛び出した！ 回転する「文字ブレード」となって暴れる文字たちを、1体ずつ鎮めていこう。「はじまりの文字」から「覇王の城」まで、全5章です。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🏆</div>
+          <h3>ランダム連戦とランキング</h3>
+          <p>漢字・ひらがな・カタカナ・絵文字・記号から、ランダムな相手が次々に登場。負けたら即終了の一本勝負で、5連勝ごとに相手が強くなります。最高連勝はGame Centerのランキングで競えます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="section-heading">
+        <p class="section-label">HOW TO PLAY</p>
+        <h2>切り抜いて、<wbr />回して、<wbr />はじき出す。</h2>
+        <p>写真を選んでからバトルするまで、4つのステップです。</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--accent)" aria-hidden="true">📷</div>
+          <small>STEP 1</small><h3>写真を切り抜く</h3><p>写真アプリで被写体を長押しして「コピー」。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--blue)" aria-hidden="true">🌀</div>
+          <small>STEP 2</small><h3>コマを作る</h3><p>貼り付けると、形と色から性能が決まったコマが完成。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: var(--purple)" aria-hidden="true">🚀</div>
+          <small>STEP 3</small><h3>シュート！</h3><p>勢いよく放って、ドラッグで操作。RUSHで体当たり。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: #c99a1a" aria-hidden="true">🏆</div>
+          <small>STEP 4</small><h3>文字を倒す</h3><p>場外に出すか回転を止めれば勝ち。次の相手へ！</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section rank-panel" id="stats" aria-labelledby="stats-heading">
+      <div class="rank-copy">
+        <p class="section-label">STATUS</p>
+        <h2 id="stats-heading">形と色で、<wbr /><br />強さが決まる。</h2>
+        <p>コマの性能は、切り抜いた写真の形と色から自動で決まります。トゲトゲの猫じゃらし、まん丸のおまんじゅう、カラフルなおもちゃ──どの写真が一番強いか、いろいろ試してみよう。</p>
+      </div>
+      <ul class="stat-list" aria-label="ステータスの決まり方">
+        <li>アタック<div class="meter"><span style="--value: 86%; --color: var(--accent)"></span></div><small>トゲトゲした形ほどアップ</small></li>
+        <li>ディフェンス<div class="meter"><span style="--value: 72%; --color: var(--blue)"></span></div><small>大きな形ほどアップ</small></li>
+        <li>スタミナ<div class="meter"><span style="--value: 64%; --color: #2bb673"></span></div><small>丸くて空気抵抗が少ない形ほどアップ</small></li>
+        <li>スピード<div class="meter"><span style="--value: 78%; --color: var(--purple)"></span></div><small>鮮やかな色ほどアップ</small></li>
+      </ul>
+    </section>
+
+    <section class="download-cta" aria-label="フォトブレードをダウンロード">
+      <img class="download-icon" src="../image/icon/photoBlade.png" alt="" width="92" height="92" />
+      <div class="download-copy"><h2>キミの写真で、<wbr />最強のコマを。</h2><p>写真を切り抜いて戦う、3Dコマバトル。</p></div>
+      <a class="button" href="https://apps.apple.com/jp/app/id6824405332" target="_blank" rel="noopener">App Storeで見る</a>
+    </section>
+
+    <section class="support" id="support" aria-label="サポート情報">
+      <article class="support-card">
+        <h2>お問い合わせ</h2>
+        <p>ご意見・ご要望、不具合のご報告を受け付けています。</p>
+        <a class="text-link" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせる</a>
+      </article>
+      <article class="support-card">
+        <h2>プライバシー</h2>
+        <p>作ったコマの画像と戦績は端末内に保存します。ランキングのために連勝記録を Game Center に送信します。また、広告の表示に Google AdMob を利用しています。詳しくはプライバシーポリシーをご覧ください。</p>
+        <a class="text-link" href="../privacy.html">プライバシーポリシーを読む</a>
+      </article>
+      <article class="support-card">
+        <h2>クレジット</h2>
+        <p>アプリ内の写真検索は Pexels の API を利用しています（Photos provided by Pexels）。写真の著作権は各撮影者に帰属します。</p>
+        <a class="text-link" href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels</a>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row wrap">
+      <span>© 2026 Harumi Sagawa — Apps</span>
+      <a href="../index.html">アプリ一覧へ戻る</a>
+    </div>
+  </footer>
+</body>
+</html>
