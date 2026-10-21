@@ -274,6 +274,7 @@
 <script>
 // 新しい順に並べる。先頭の3本を「新しいアプリ」として大きく出す
 const apps = [
+  { name:'みっけアンサー', url:'https://apps.apple.com/jp/app/id6825153683', desc:'見つからない間違い探しの答えを教えてくれるアプリです。2つの絵を撮って重ねるだけで、違う所に⭕️が付きます', category:'ライフスタイル', image:'image/icon/mikkeAnswer.png', page:'detail/mikkeAnswer.html' },
   { name:'フォトブレード', url:'https://apps.apple.com/jp/app/id6824405332', desc:'写真から切り抜いた被写体が回転するバトルコマになる、3D物理バトルゲームです', category:'ゲーム', image:'image/icon/photoBlade.png', page:'detail/photoBlade.html' },
   { name:'青空ずんだ', url:'https://apps.apple.com/jp/app/id6824322042', desc:'ずんだもんと図書館を歩いて、青空文庫の名作を探して読める読書アプリです。ずんだもんの声で読み上げもできます', category:'ブック', image:'image/icon/aozoraZunda.png', page:'detail/aozoraZunda.html' },
   { name:'のっけタワー', url:'https://apps.apple.com/jp/app/id6822193103', desc:'写真から切り抜いた被写体を積み上げて、どこまで高く積めるかチャレンジするタワーゲームです', category:'ゲーム', image:'image/icon/imageTower.png', page:'detail/imageTower.html' },
@@ -297,7 +298,7 @@ const apps = [
 // カテゴリごとの色（バッジと新作カードの背景）
 const tints = {
   'ゲーム':'#ff8a80', 'ブック':'#a5dc7a', '教育':'#7fd8b0', 'ファイナンス':'#ffd166',
-  'エンターテインメント':'#c7a6ff', 'ミュージック':'#ffa8d8', 'ユーティリティ':'#8fb8ff', '仕事効率化':'#8fdcf0'
+  'エンターテインメント':'#c7a6ff', 'ミュージック':'#ffa8d8', 'ユーティリティ':'#8fb8ff', '仕事効率化':'#8fdcf0', 'ライフスタイル':'#ffd43b'
 };
 const tintOf = app => tints[app.category] || '#e2e8f0';
 const tilts = [-6, 4, -2, 7, -5, 3, 6, -4, 2, -7, 5, -3];
