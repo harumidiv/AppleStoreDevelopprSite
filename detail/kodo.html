@@ -1,175 +1,619 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kodo -心臓博物館- - サポート</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Kodo -心臓博物館-は、いろんな生き物の心臓の鼓動を、画面とiPhoneの振動で感じられるアプリです。すずめの800bpmから、ぞうの20bpmまで、9種類の生き物の生きる速さを手のひらで比べられます。" />
+  <meta name="theme-color" content="#050505" />
+  <meta property="og:title" content="Kodo -心臓博物館- - 生き物の鼓動を手のひらで" />
+  <meta property="og:description" content="生きる速さは、生き物ごとに違う。9種類の鼓動を、目と振動で感じる標本箱アプリ。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/kodo.html" />
+  <meta property="og:image" content="https://harumidiv.github.io/AppleStoreDevelopprSite/image/Kodo/01_list.jpg" />
+  <link rel="canonical" href="https://harumidiv.github.io/AppleStoreDevelopprSite/detail/kodo.html" />
+  <title>Kodo -心臓博物館- - 生き物の鼓動を手のひらで</title>
   <style>
+    :root {
+      color-scheme: dark;
+      /* アプリの「鼓動標本」と同じ配色（黒い標本箱・生成りの文字・心臓の赤） */
+      --black: #050505;
+      --box: #0e0d0c;
+      --ink: #ece8e3;
+      --muted: #8f8a84;
+      --rule: #2a2826;
+      --border: #3a3734;
+      --heart: #ff5a52;
+      --heart-deep: #c40000;
+      --heart-dark: #5a0a08;
+      --radius: 26px;
+      --line: 3px solid var(--ink);
+      --pop: 6px 6px 0 var(--heart-deep);
+      --mincho: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Arial, sans-serif;
-      line-height: 1.6;
       margin: 0;
-      background-color: #f8f9fa;
-      color: #343a3f;
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--black);
+      line-height: 1.75;
     }
-    header {
-      background: linear-gradient(135deg, #a29bfe, #81ecec);
-      color: #fff;
-      text-align: center;
-      padding: 60px 20px;
+    a { color: inherit; }
+    /* 見出しは言葉の途中で折り返さず、<wbr> の位置で折り返す */
+    h1, h2, h3, .stat strong, .lead { word-break: keep-all; overflow-wrap: anywhere; }
+    h1, h2, h3 { font-family: var(--mincho); font-weight: 700; }
+    img { display: block; max-width: 100%; height: auto; }
+    a:focus-visible { outline: 3px solid var(--heart); outline-offset: 4px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+    /* ヒーロー：標本箱の黒に、心電図の方眼と脈打つ心臓の赤 */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 78% 46%, rgba(196, 0, 0, .35) 0 14%, transparent 34%),
+        linear-gradient(var(--rule) 1px, transparent 1px) 0 0 / 40px 40px,
+        linear-gradient(90deg, var(--rule) 1px, transparent 1px) 0 0 / 40px 40px,
+        var(--black);
+      border-bottom: var(--line);
     }
-    header h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      margin: 0;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    header p {
-      font-size: clamp(1rem, 2vw, 1.25rem);
-      margin-top: 10px;
-      font-weight: 300;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .section {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      margin-bottom: 25px;
-    }
-    .section h2 {
-      border-bottom: 2px solid #e9ecef;
-      padding-bottom: 10px;
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
-    .media-card {
+    .topbar {
+      position: relative;
+      z-index: 2;
       display: flex;
-      flex-direction: column;
-      gap: 20px;
       align-items: center;
-      text-align: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 24px;
     }
-    .media-card img {
-      max-width: 200px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--black);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: .88rem;
     }
-    .btn-group {
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links > a { text-decoration: none; font-size: .86rem; font-weight: 800; }
+    .nav-links > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .8fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+      padding: 40px 0 84px;
+    }
+    .app-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .app-icon {
+      width: 84px;
+      height: 84px;
+      border: 2px solid var(--ink);
+      border-radius: 22px;
+      box-shadow: var(--pop);
+    }
+    .app-brand strong { display: block; font-family: var(--mincho); font-size: 1.4rem; }
+    .app-brand span { display: block; font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; color: var(--muted); }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5.4vw, 4.4rem);
+      line-height: 1.2;
+      letter-spacing: .02em;
+    }
+    /* 「速さ」を心臓の赤で脈打たせる */
+    h1 em {
+      display: inline-block;
+      font-style: normal;
+      color: var(--heart);
+      animation: beat 1.2s ease-in-out infinite;
+    }
+    @keyframes beat {
+      0%, 40%, 100% { transform: scale(1); }
+      12% { transform: scale(1.08); }
+      24% { transform: scale(1.03); }
+    }
+    .lead {
+      display: inline-block;
+      max-width: 640px;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: 2px solid var(--border);
+      border-left: 4px solid var(--heart);
+      background: rgba(14, 13, 12, .85);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 500;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 var(--heart-deep);
+      text-decoration: none;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--heart-deep); }
+    .button.primary { background: var(--ink); color: var(--black); }
+    .button.secondary { background: var(--black); }
+    .hero-note {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
     }
-    .btn {
-      text-decoration: none;
-      color: #fff;
-      background-color: #007bff;
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
+    .hero-note li {
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--box);
+      font-size: .8rem;
+      font-weight: 700;
     }
-    .btn:hover {
-      background-color: #0056b3;
+
+    .hero-visual { position: relative; min-height: 640px; }
+    .hero-shot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(64%, 300px);
+      border: 3px solid var(--ink);
+      border-radius: 34px;
+      box-shadow: 8px 8px 0 var(--heart-deep);
+      background: var(--black);
     }
-    .screenshot {
-        width: 100%;
-        max-width: 300px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    .hero-shot.main { z-index: 3; transform: translate(-50%, -50%) rotate(2deg); animation: float 6s ease-in-out infinite; }
+    .hero-shot.left { z-index: 1; width: min(54%, 250px); transform: translate(-96%, -44%) rotate(-9deg); }
+    .hero-shot.right { z-index: 2; width: min(54%, 250px); transform: translate(-4%, -44%) rotate(9deg); }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(2deg); }
+      50% { transform: translate(-50%, calc(-50% - 12px)) rotate(0deg); }
     }
-    .screenshots-group {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-        margin-top: 25px;
+    .pulse { position: absolute; z-index: 4; width: 140px; height: 44px; }
+    .pulse.one { top: 6%; left: 0; }
+    .pulse.two { right: 0; bottom: 8%; width: 110px; }
+
+    .statbar {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: -36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--box);
+      box-shadow: var(--pop);
     }
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: #6c757d;
+    .stat { padding: 22px; text-align: center; }
+    .stat + .stat { border-left: 2px solid var(--border); }
+    .stat strong { display: block; font-family: var(--mincho); font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.2; }
+    .stat:nth-child(2) strong { color: var(--heart); }
+    .stat span { font-size: .86rem; font-weight: 600; color: var(--muted); }
+
+    main { padding: 88px 0; }
+    .section { margin-bottom: 100px; }
+    .section-heading { max-width: 760px; margin-bottom: 34px; }
+    .section-label {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 2px 12px;
+      border: 1px solid var(--heart);
+      border-radius: 999px;
+      color: var(--heart);
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: .18em;
+      font-size: .74rem;
     }
-    @media (min-width: 768px) {
-      .media-card {
-        flex-direction: row;
-        text-align: left;
-      }
-      .media-card.reverse {
-        flex-direction: row-reverse;
-        text-align: right;
-      }
-      .media-card img {
-        margin: 0;
-      }
-      .screenshots-group {
-        flex-direction: row;
-        justify-content: center;
-      }
+    h2 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.3; letter-spacing: .02em; }
+    .section-heading > p:last-child { color: var(--muted); margin: 14px 0 0; font-size: 1.05rem; font-weight: 500; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .feature {
+      position: relative;
+      padding: 28px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--box);
+    }
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      font-size: 1.5rem;
+      background: var(--heart-dark);
+    }
+    .feature h3 { margin: 0 0 8px; font-size: 1.32rem; }
+    .feature p { margin: 0; color: var(--muted); font-weight: 500; }
+
+    /* 生き物ごとの鼓動の速さ（アプリの一覧と同じ数値） */
+    .specimens {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border: 1px solid var(--rule);
+      background: var(--rule);
+    }
+    .specimens li {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--black);
+    }
+    .specimens .no { font-family: var(--mono); font-size: .74rem; color: var(--muted); }
+    .specimens .name { font-family: var(--mincho); font-size: 1.1rem; }
+    .specimens .bpm { font-family: var(--mono); font-size: 1.2rem; color: var(--heart); }
+    .specimens .bpm small { margin-left: 4px; font-size: .7rem; color: var(--muted); }
+    /* 点は実際の1拍の間隔（--beat）で脈打つ */
+    .specimens .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 10px;
+      border-radius: 50%;
+      background: var(--heart-deep);
+      vertical-align: middle;
+      animation: dot var(--beat, 1s) ease-in-out infinite;
+    }
+    @keyframes dot {
+      0%, 100% { transform: scale(.7); opacity: .55; }
+      15% { transform: scale(1.25); opacity: 1; }
+    }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .step {
+      padding: 0 0 22px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--box);
+    }
+    .step-media {
+      display: grid;
+      place-items: end center;
+      height: 300px;
+      overflow: hidden;
+      border-bottom: 2px solid var(--border);
+      background-color: var(--step-bg, var(--heart-dark));
+      background-image: radial-gradient(rgba(255,255,255,.08) 20%, transparent 22%);
+      background-size: 30px 30px;
+    }
+    .step-media img {
+      width: 66%;
+      margin-bottom: -46%;
+      border: 2px solid var(--ink);
+      border-radius: 22px 22px 0 0;
+    }
+    .step small {
+      display: inline-block;
+      margin: 18px 20px 0;
+      padding: 1px 10px;
+      border: 1px solid var(--heart);
+      border-radius: 999px;
+      color: var(--heart);
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: .72rem;
+    }
+    .step h3 { margin: 8px 20px 6px; font-size: 1.12rem; }
+    .step p { margin: 0 20px; color: var(--muted); font-size: .9rem; font-weight: 500; }
+
+    /* 文字表示（心電図モニター）の紹介 */
+    .rank-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(30px, 6vw, 70px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 56px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(rgba(255, 90, 82, .12) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(90deg, rgba(255, 90, 82, .12) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(135deg, #2a0504, #0e0d0c);
+      box-shadow: var(--pop);
+    }
+    .rank-copy p { margin: 16px 0 0; padding: 16px 18px; border: 1px solid var(--border); border-radius: 18px; background: var(--black); font-weight: 500; }
+    .modes { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+    .modes li { padding: 2px 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--black); font-size: .84rem; font-weight: 700; }
+    .rank-shots { display: flex; justify-content: center; gap: 18px; }
+    .rank-shots img { width: min(46%, 230px); border: 2px solid var(--ink); border-radius: 26px; box-shadow: 5px 5px 0 var(--heart-deep); }
+    .rank-shots img:last-child { transform: translateY(26px); }
+
+    .gallery { display: flex; gap: 20px; overflow-x: auto; padding: 4px 4px 22px; scroll-snap-type: x mandatory; }
+    figure {
+      flex: 0 0 min(72vw, 260px);
+      margin: 0;
+      padding: 8px;
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      background: var(--box);
+      scroll-snap-align: start;
+    }
+    figure img { width: 100%; aspect-ratio: 739 / 1606; object-fit: cover; border-radius: 15px; }
+    figcaption { padding: 10px 4px 2px; text-align: center; font-size: .84rem; font-weight: 700; }
+
+    .download-cta {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+      padding: clamp(26px, 5vw, 46px);
+      border: var(--line);
+      border-radius: var(--radius);
+      background-color: var(--heart-deep);
+      background-image: radial-gradient(rgba(255,255,255,.12) 20%, transparent 22%);
+      background-size: 34px 34px;
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+    .download-icon { width: 92px; height: 92px; border: 2px solid var(--ink); border-radius: 24px; }
+    .download-copy h2 { font-size: clamp(1.5rem, 3.2vw, 2.4rem); }
+    .download-copy p { margin: 8px 0 0; font-weight: 600; }
+    .download-cta .button { background: var(--ink); color: var(--black); box-shadow: 4px 4px 0 var(--black); white-space: nowrap; }
+
+    .support { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .support-card { padding: 28px; border: 2px solid var(--border); border-radius: var(--radius); background: var(--box); }
+    .support-card h2 { font-size: 1.4rem; letter-spacing: 0; }
+    .support-card p { color: var(--muted); font-weight: 500; }
+    .support-card ul { margin: 0; padding-left: 1.2em; color: var(--muted); font-weight: 500; }
+    .text-link { font-weight: 800; color: var(--heart); text-underline-offset: 4px; }
+
+    footer { padding: 30px 0 44px; border-top: var(--line); background: var(--box); font-weight: 600; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer a { text-underline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { text-align: center; }
+      .app-brand, .actions, .hero-note { justify-content: center; }
+      .lead { text-align: left; }
+      .hero-visual { min-height: 560px; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .specimens { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rank-panel { grid-template-columns: 1fr; }
+      .support { grid-template-columns: 1fr; }
+      .download-cta { grid-template-columns: auto 1fr; }
+      .download-cta .button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav-links > a:not(:last-child) { display: none; }
+      .statbar { grid-template-columns: 1fr; margin-top: -28px; }
+      .stat + .stat { border-left: 0; border-top: 2px solid var(--border); }
+      .features, .support, .steps, .specimens { grid-template-columns: 1fr; }
+      .step-media { height: 340px; }
+      .step-media img { width: 56%; margin-bottom: -40%; }
+      .hero-visual { min-height: 480px; }
+      .hero-shot { width: min(60vw, 250px); }
+      .hero-shot.left, .hero-shot.right { width: min(48vw, 200px); }
+      .download-cta { grid-template-columns: 1fr; text-align: center; }
+      .download-icon { margin-inline: auto; }
+      .download-cta .button { grid-column: auto; }
+      main { padding: 64px 0; }
+      .section { margin-bottom: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-shot.main, h1 em, .specimens .dot { animation: none; }
+      .button { transition: none; }
     }
   </style>
 </head>
 <body>
+  <header class="hero">
+    <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
+      <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
+      <div class="nav-links">
+        <a href="#features">特徴</a>
+        <a href="#specimens">標本</a>
+        <a href="#flow">使い方</a>
+        <a href="#monitor">心電図</a>
+        <a href="#screenshots">画面</a>
+        <a href="#support">サポート</a>
+      </div>
+    </nav>
 
-  <header>
-    <h1>Kodo -心臓博物館-</h1>
-    <p>心臓の解剖を体験できる学習アプリ</p>
+    <div class="hero-grid wrap">
+      <div class="hero-copy">
+        <div class="app-brand">
+          <img class="app-icon" src="../image/icon/kodo.png" alt="Kodo -心臓博物館-のアプリアイコン" width="84" height="84" />
+          <div><strong>Kodo -心臓博物館-</strong><span>KODO SPECIMENS</span></div>
+        </div>
+        <h1>生きる<em>速さ</em>は、<wbr />生き物ごとに<wbr />違う。</h1>
+        <p class="lead">すずめの心臓は1分間に800回、<wbr />ぞうはたったの20回。<wbr />「Kodo -心臓博物館-」は、<wbr />いろんな生き物の鼓動を、<wbr />画面とiPhoneの振動で感じられる<wbr />「鼓動標本」のアプリです。<wbr />自分の胸に手を当てて、<wbr />どれくらい違うか比べてみてください。</p>
+        <div class="actions">
+          <a class="button primary" href="https://apps.apple.com/jp/app/6444230294" target="_blank" rel="noopener">App Storeで見る</a>
+          <a class="button secondary" href="#features">特徴を見る</a>
+        </div>
+        <ul class="hero-note" aria-label="対応情報">
+          <li>iPhone対応</li>
+          <li>振動で鼓動を体感</li>
+          <li>10の言語に対応</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <svg class="pulse one" viewBox="0 0 140 44" aria-hidden="true"><path d="M2 26 H46 L54 34 L66 6 L76 40 L84 22 H138" fill="none" stroke="#ff5a52" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="pulse two" viewBox="0 0 140 44" aria-hidden="true"><path d="M2 26 H46 L54 34 L66 6 L76 40 L84 22 H138" fill="none" stroke="#ece8e3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <img class="hero-shot left" src="../image/Kodo/03_monitor_list.jpg" alt="生き物の鼓動を心電図で並べた一覧画面" width="739" height="1606" />
+        <img class="hero-shot right" src="../image/Kodo/02_detail_horse.jpg" alt="馬の鼓動を全力疾走の状態で表示した画面" width="739" height="1606" />
+        <img class="hero-shot main" src="../image/Kodo/01_list.jpg" alt="生き物の鼓動が標本箱のように並んだ一覧画面" width="739" height="1606" />
+      </div>
+    </div>
   </header>
 
-  <main class="container">
+  <div class="statbar wrap" aria-label="アプリの特徴">
+    <div class="stat"><strong>9種類</strong><span>人間からネズミまでの鼓動標本</span></div>
+    <div class="stat"><strong>20〜800 bpm</strong><span>こんなに違う、生きる速さ</span></div>
+    <div class="stat"><strong>振動で体感</strong><span>鼓動のリズムが手のひらに</span></div>
+  </div>
 
-    <section class="section">
-      <h2>アプリについて</h2>
-      <div class="media-card">
-        <img src="../image/icon/kodo.png" alt="アプリのアイコン" />
-        <div>
-          <p>「Kodo -心臓博物館-」は、いろんな生き物の心拍数を目で見て肌で感じられるアプリです</p>
-          <p>iPhoneの振動で生き物の生きているスピードの違いを実感することができます、あなたの心臓に手を当ててどれくらい違うか比べてみても良いかもしれません</p>
-        </div>
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-heading">
+        <p class="section-label">FEATURES</p>
+        <h2>鼓動を、<wbr />目と手のひらで<wbr />感じる。</h2>
+        <p>標本箱のように並んだ生き物たちの心臓が、それぞれの速さで脈打っています。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🫀</div>
+          <h3>9種類の鼓動標本</h3>
+          <p>人間、すずめ、ぞう、たこ、にわとり、ねこ、犬、馬、ネズミ。生き物ごとの心拍数（bpm）と一緒に、心臓がその生き物の速さで脈打ちます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">📳</div>
+          <h3>振動で鼓動を体感</h3>
+          <p>生き物を選ぶと、iPhoneが「ドクン、ドクン」と鼓動のリズムで振動します。自分の胸に手を当てて、速さの違いを比べられます。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">🏃</div>
+          <h3>状態で変わる心拍数</h3>
+          <p>人間は「安静・運動・睡眠」、すずめは「飛行中」、馬は「全力疾走」など、状態を切り替えると鼓動の速さも変わります。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-icon" aria-hidden="true">📈</div>
+          <h3>心電図モニターでも見られる</h3>
+          <p>右上の「文字」ボタンで、絵の代わりに心電図の波形で鼓動を表示します。数字と波で、速さの違いがひと目でわかります。</p>
+        </article>
       </div>
     </section>
 
-    <section class="section">
-      <h2>アプリの機能</h2>
-      <p>心臓の動くスピードを目と触覚で体感することができます</p>
-      <div class="screenshots-group">
-        <img src="../image/Kodo/0.png" alt="アプリ画面0” class="screenshot" />
-        <img src="../image/Kodo/1.png" alt="アプリ画面1” class="screenshot" />
+    <section class="section" id="specimens">
+      <div class="section-heading">
+        <p class="section-label">SPECIMENS</p>
+        <h2>収蔵されている<wbr />9つの鼓動</h2>
+        <p>安静時の心拍数です。赤い点も、それぞれの鼓動のリズムで脈打っています。</p>
       </div>
+      <ul class="specimens" aria-label="生き物ごとの心拍数">
+        <li><span class="no">No.01</span><span class="name"><span class="dot" style="--beat: .85s" aria-hidden="true"></span>人間</span><span class="bpm">71<small>bpm</small></span></li>
+        <li><span class="no">No.02</span><span class="name"><span class="dot" style="--beat: .075s" aria-hidden="true"></span>すずめ</span><span class="bpm">800<small>bpm</small></span></li>
+        <li><span class="no">No.03</span><span class="name"><span class="dot" style="--beat: 3s" aria-hidden="true"></span>ぞう</span><span class="bpm">20<small>bpm</small></span></li>
+        <li><span class="no">No.04</span><span class="name"><span class="dot" style="--beat: 1.7s" aria-hidden="true"></span>たこ</span><span class="bpm">35<small>bpm</small></span></li>
+        <li><span class="no">No.05</span><span class="name"><span class="dot" style="--beat: .3s" aria-hidden="true"></span>にわとり</span><span class="bpm">200<small>bpm</small></span></li>
+        <li><span class="no">No.06</span><span class="name"><span class="dot" style="--beat: .5s" aria-hidden="true"></span>ねこ</span><span class="bpm">120<small>bpm</small></span></li>
+        <li><span class="no">No.07</span><span class="name"><span class="dot" style="--beat: .7s" aria-hidden="true"></span>犬</span><span class="bpm">86<small>bpm</small></span></li>
+        <li><span class="no">No.08</span><span class="name"><span class="dot" style="--beat: 1.5s" aria-hidden="true"></span>馬</span><span class="bpm">40<small>bpm</small></span></li>
+        <li><span class="no">No.09</span><span class="name"><span class="dot" style="--beat: .11s" aria-hidden="true"></span>ネズミ</span><span class="bpm">545<small>bpm</small></span></li>
+      </ul>
     </section>
-    
-    <section class="section">
-      <h2>お問い合わせ</h2>
-      <p>アプリに関するご意見・ご要望、不具合のご報告など、お気軽にお問い合わせください。</p>
-      <div class="btn-group">
-        <a href="https://twitter.com/u11238123" target="_blank" rel="noopener" class="btn">Twitterでお問い合わせ</a>
+
+    <section class="section" id="flow">
+      <div class="section-heading">
+        <p class="section-label">HOW TO USE</p>
+        <h2>選んで、<wbr />感じて、<wbr />比べる。</h2>
+        <p>一覧から生き物を選ぶだけで、すぐに鼓動を感じられます。</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <div class="step-media"><img src="../image/Kodo/01_list.jpg" alt="鼓動標本の一覧画面" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 1</small><h3>生き物を選ぶ</h3><p>標本箱のような一覧から、気になる生き物をタップします。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: #2a0504"><img src="../image/Kodo/05_detail_human.jpg" alt="人間の鼓動を運動の状態で表示した画面" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 2</small><h3>振動を感じる</h3><p>iPhoneを手に持つと、鼓動のリズムで振動が伝わります。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: #3d0b08"><img src="../image/Kodo/02_detail_horse.jpg" alt="馬の鼓動を全力疾走の状態で表示した画面" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 3</small><h3>状態を切り替える</h3><p>「安静」「全力疾走」などを選ぶと、鼓動の速さが変わります。</p>
+        </article>
+        <article class="step">
+          <div class="step-media" style="--step-bg: #1d1b19"><img src="../image/Kodo/04_monitor_detail_horse.jpg" alt="馬の鼓動を心電図モニターで表示した画面" loading="lazy" width="739" height="1606" /></div>
+          <small>STEP 4</small><h3>次の生き物と比べる</h3><p>左右の矢印やスワイプで、ほかの生き物の鼓動に切り替えられます。</p>
+        </article>
       </div>
     </section>
 
-    <section class="section">
-      <h2>プライバシーポリシー</h2>
-      <p>「Kodo -心臓博物館-」は、ユーザーのプライバシーを尊重します。</p>
-      <p>本アプリは、個人を特定できる情報を一切収集しません。詳細については、以下をご確認ください。</p>
-      <div class="btn-group">
-        <a href="../privacy.html" class="btn">プライバシーポリシーを読む</a>
+    <section class="section rank-panel" id="monitor" aria-labelledby="monitor-heading">
+      <div class="rank-copy">
+        <p class="section-label">MONITOR</p>
+        <h2 id="monitor-heading">波で見ると、<wbr /><br />速さの違いが<wbr />よくわかる。</h2>
+        <p>一覧の右上で「画像」と「文字」を切り替えられます。「文字」にすると、すべての生き物の鼓動が心電図の波形で並び、すずめやネズミの細かい波と、ぞうのゆったりした波を見比べられます。詳細画面では大きな心電図モニターに、心拍数と1拍の間隔を表示します。</p>
+        <ul class="modes" aria-label="一覧の表示">
+          <li>画像：生き物の姿と脈打つ心臓</li><li>文字：心電図の波形と心拍数</li>
+        </ul>
+      </div>
+      <div class="rank-shots">
+        <img src="../image/Kodo/03_monitor_list.jpg" alt="心電図の波形で並んだ一覧画面" loading="lazy" width="739" height="1606" />
+        <img src="../image/Kodo/04_monitor_detail_horse.jpg" alt="馬の心電図モニター画面" loading="lazy" width="739" height="1606" />
       </div>
     </section>
 
+    <section class="section" id="screenshots">
+      <div class="section-heading">
+        <p class="section-label">SCREENSHOTS</p>
+        <h2>Kodo -心臓博物館-の画面</h2>
+        <p>横にスクロールして、すべての画面を見られます。</p>
+      </div>
+      <div class="gallery" aria-label="Kodo -心臓博物館-のスクリーンショット">
+        <figure><img src="../image/Kodo/01_list.jpg" alt="鼓動標本の一覧画面" loading="lazy" width="739" height="1606" /><figcaption>鼓動標本の一覧</figcaption></figure>
+        <figure><img src="../image/Kodo/02_detail_horse.jpg" alt="馬の鼓動の詳細画面" loading="lazy" width="739" height="1606" /><figcaption>状態で変わる心拍数</figcaption></figure>
+        <figure><img src="../image/Kodo/03_monitor_list.jpg" alt="心電図の波形で並んだ一覧画面" loading="lazy" width="739" height="1606" /><figcaption>心電図で並べる</figcaption></figure>
+        <figure><img src="../image/Kodo/04_monitor_detail_horse.jpg" alt="馬の心電図モニター画面" loading="lazy" width="739" height="1606" /><figcaption>心電図モニター</figcaption></figure>
+        <figure><img src="../image/Kodo/05_detail_human.jpg" alt="人間の鼓動の詳細画面" loading="lazy" width="739" height="1606" /><figcaption>自分の鼓動と比べる</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="download-cta" aria-label="Kodo -心臓博物館-をダウンロード">
+      <img class="download-icon" src="../image/icon/kodo.png" alt="" width="92" height="92" />
+      <div class="download-copy"><h2>みんなの鼓動を、<wbr />手のひらで。</h2><p>生き物ごとに違う生きる速さを、振動で感じる鼓動標本アプリ。</p></div>
+      <a class="button" href="https://apps.apple.com/jp/app/6444230294" target="_blank" rel="noopener">App Storeで見る</a>
+    </section>
+
+    <section class="support" id="support" aria-label="サポート情報">
+      <article class="support-card">
+        <h2>お問い合わせ</h2>
+        <p>ご意見・ご要望、不具合のご報告を受け付けています。</p>
+        <a class="text-link" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせる</a>
+      </article>
+      <article class="support-card">
+        <h2>プライバシー</h2>
+        <p>本アプリが、お名前などの個人を特定できる情報を集めることはありません。広告の表示には Google AdMob を利用しています。詳しくはプライバシーポリシーをご覧ください。</p>
+        <a class="text-link" href="../privacy.html">プライバシーポリシーを読む</a>
+      </article>
+      <article class="support-card">
+        <h2>振動が感じられないときは</h2>
+        <ul>
+          <li>振動は、生き物の詳細画面を開いている間だけ伝わります</li>
+          <li>端末の「設定」＞「サウンドと触覚」で、「システムの触覚」がオンになっているか確認する</li>
+          <li>iPhoneを手のひらでしっかり持つ</li>
+        </ul>
+      </article>
+    </section>
   </main>
 
   <footer>
-    <p>Harumi Sagawa — Apps</p>
-    <p>
-        <a href="../index.html">トップページに戻る</a>
-    </p>
+    <div class="footer-row wrap">
+      <span>© 2026 Harumi Sagawa — Apps</span>
+      <a href="../index.html">アプリ一覧へ戻る</a>
+    </div>
   </footer>
-
 </body>
 </html>
