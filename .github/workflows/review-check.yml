@@ -31,9 +31,9 @@ jobs:
           server_address: smtp.gmail.com
           server_port: 465
           secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
+          username: harumi.AppStoreReview@gmail.com
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "[App Store] 未返信レビューが ${{ steps.reviews.outputs.count }} 件あります"
           to: ${{ secrets.MAIL_TO }}
-          from: App Review Bot <${{ secrets.MAIL_USERNAME }}>
+          from: App Review Bot <harumi.AppStoreReview@gmail.com>
           body: file://reviews.txt
