@@ -1,0 +1,39 @@
+name: Unanswered Review Check
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 毎日 9:00 JST
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyjwt cryptography requests
+
+      - id: reviews
+        run: python .github/scripts/check_reviews.py
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          ASC_APP_IDS: ${{ secrets.ASC_APP_IDS }}
+
+      - if: steps.reviews.outputs.count != '0'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[App Store] 未返信レビューが ${{ steps.reviews.outputs.count }} 件あります"
+          to: ${{ secrets.MAIL_TO }}
+          from: App Review Bot <${{ secrets.MAIL_USERNAME }}>
+          body: file://reviews.txt
