@@ -33,7 +33,7 @@ jobs:
           secure: true
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[App Store] 未返信レビューが ${{ steps.reviews.outputs.count }} 件あります"
+          subject: "[App Store] 返信が必要なレビューが ${{ steps.reviews.outputs.count }} 件あります"
           to: ${{ secrets.MAIL_TO }}
           from: App Review Bot <${{ secrets.MAIL_USERNAME }}>
           body: file://reviews.txt

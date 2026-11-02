@@ -53,32 +53,52 @@ def get(session, url, params=None):
     return r.json()
 
 
-def fetch_unanswered(session, app_id):
+def parse_date(s):
+    return datetime.fromisoformat(s.replace("Z", "+00:00"))
+
+
+def fetch_reviews_needing_reply(session, app_id):
+    """返信が必要なレビューを (未返信, 返信後に更新) の2つのリストで返す。
+
+    App Store ではユーザー1人につきレビューは1件で、書き直すと同じレビューが上書きされる。
+    そのため、レビューの日時が公開済みの返信の更新日時より新しいものを「返信後に更新された」とみなす。
+    """
     url = f"{API}/apps/{app_id}/customerReviews"
-    params = {
-        "exists[publishedResponse]": "false",
-        "sort": "-createdDate",
-        "limit": 200,
-    }
-    reviews = []
+    params = {"include": "response", "sort": "-createdDate", "limit": 200}
+    unanswered, edited = [], []
     while url:
         data = get(session, url, params)
-        reviews += data["data"]
+        responses = {
+            inc["id"]: inc["attributes"]
+            for inc in data.get("included", [])
+            if inc["type"] == "customerReviewResponses"
+        }
+        for rv in data["data"]:
+            ref = (rv.get("relationships", {}).get("response") or {}).get("data")
+            resp = responses.get(ref["id"]) if ref else None
+            if not resp or resp.get("state") != "PUBLISHED":
+                unanswered.append((rv, None))
+            elif parse_date(rv["attributes"]["createdDate"]) > parse_date(resp["lastModifiedDate"]):
+                edited.append((rv, resp))
         url, params = data.get("links", {}).get("next"), None
-    return reviews
+    return unanswered, edited
 
 
-def format_review(rv):
+def format_review(rv, resp=None):
     a = rv["attributes"]
     rating = a.get("rating", 0)
-    created = datetime.fromisoformat(a["createdDate"]).astimezone(JST)
-    return (
+    created = parse_date(a["createdDate"]).astimezone(JST)
+    text = (
         f"{'★' * rating}{'☆' * (5 - rating)}  {a.get('territory', '')}  "
         f"{created:%Y-%m-%d %H:%M}\n"
         f"【{a.get('title', '')}】\n"
         f"{a.get('body', '')}\n"
         f"— {a.get('reviewerNickname', '')}"
     )
+    if resp:
+        replied = parse_date(resp["lastModifiedDate"]).astimezone(JST)
+        text += f"\n  ↳ 前回の返信（{replied:%Y-%m-%d %H:%M}）: {resp.get('responseBody', '')}"
+    return text
 
 
 def main():
@@ -93,25 +113,31 @@ def main():
     for app_id in app_ids:
         try:
             name = get(session, f"{API}/apps/{app_id}")["data"]["attributes"]["name"]
-            reviews = fetch_unanswered(session, app_id)
+            unanswered, edited = fetch_reviews_needing_reply(session, app_id)
         except requests.HTTPError as e:
             # 別チームのアプリや配信終了したアプリは取得できないので飛ばす
             print(f"::warning::{app_id} をスキップしました（HTTP {e.response.status_code}）")
             skipped.append(app_id)
             continue
-        print(f"{name} ({app_id}): {len(reviews)} unanswered")
-        if not reviews:
+        print(f"{name} ({app_id}): {len(unanswered)} unanswered, {len(edited)} edited after reply")
+        if not unanswered and not edited:
             continue
-        total += len(reviews)
-        body = "\n\n".join(format_review(rv) for rv in reviews)
-        sections.append(
-            f"■ {name}（{len(reviews)}件）\n"
-            f"https://appstoreconnect.apple.com/apps/{app_id}\n\n"
-            f"{body}"
-        )
+        total += len(unanswered) + len(edited)
+        parts = [f"■ {name}\nhttps://appstoreconnect.apple.com/apps/{app_id}"]
+        if unanswered:
+            parts.append(
+                f"▼ 未返信（{len(unanswered)}件）\n\n"
+                + "\n\n".join(format_review(rv) for rv, _ in unanswered)
+            )
+        if edited:
+            parts.append(
+                f"▼ 返信後にレビューが更新されたもの（{len(edited)}件）\n\n"
+                + "\n\n".join(format_review(rv, resp) for rv, resp in edited)
+            )
+        sections.append("\n\n".join(parts))
 
     with open("reviews.txt", "w", encoding="utf-8") as f:
-        f.write(f"未返信のレビューが {total} 件あります。\n")
+        f.write(f"返信が必要なレビューが {total} 件あります。\n")
         for section in sections:
             f.write("\n" + "=" * 40 + "\n" + section + "\n")
         if skipped:
