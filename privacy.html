@@ -49,31 +49,27 @@
       padding-bottom: 1rem;
       border-bottom: 1px solid #e5e7eb;
     }
-    .lang-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .lang-buttons button {
-      font: inherit;
-      font-size: 0.85rem;
-      line-height: 1.2;
-      padding: 6px 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 999px;
-      background: #fff;
+    .lang-switch label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
       color: #374151;
+    }
+    .lang-switch select {
+      font: inherit;
+      font-size: 0.9rem;
+      padding: 6px 32px 6px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 10px center;
+      color: #111827;
       cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      max-width: 100%;
     }
-    .lang-buttons button:hover {
-      background: #f3f4f6;
-    }
-    .lang-buttons button[aria-pressed="true"] {
-      background: #1f2937;
-      border-color: #1f2937;
-      color: #fff;
-    }
-    .lang-buttons button:focus-visible {
+    .lang-switch select:focus-visible {
       outline: 2px solid #2563eb;
       outline-offset: 2px;
     }
@@ -85,7 +81,10 @@
 <body>
   <main>
     <nav class="lang-switch" aria-label="Language">
-      <div class="lang-buttons" id="langButtons"></div>
+      <label>
+        <span aria-hidden="true">🌐</span>
+        <select id="langSelect" aria-label="Language"></select>
+      </label>
     </nav>
     <div id="policy">
     <h1>プライバシーポリシー</h1>
@@ -175,7 +174,7 @@
   </main>
   <script>
   (function () {
-    // ボタンの並び順と、各言語の表示名（その言語での名前）
+    // プルダウンの並び順と、各言語の表示名（その言語での名前）
     var LANGS = [
       ["ja", "日本語"],
       ["en", "English"],
@@ -214,20 +213,19 @@
     // 翻訳は privacy-i18n/<言語コード>.js にあり、選ばれたときに読み込む
     var I18N = window.PRIVACY_I18N = window.PRIVACY_I18N || {};
     var policy = document.getElementById("policy");
-    var buttonsBox = document.getElementById("langButtons");
+    var selectBox = document.getElementById("langSelect");
     I18N.ja = { title: document.title, html: policy.innerHTML };
 
-    var buttons = {};
+    var options = {};
     LANGS.forEach(function (l) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.lang = l[0];
-      b.textContent = l[1];
-      b.setAttribute("aria-pressed", "false");
-      b.addEventListener("click", function () { select(l[0], true); });
-      buttons[l[0]] = b;
-      buttonsBox.appendChild(b);
+      var o = document.createElement("option");
+      o.value = l[0];
+      o.lang = l[0];
+      o.textContent = l[1];
+      options[l[0]] = o;
+      selectBox.appendChild(o);
     });
+    selectBox.addEventListener("change", function () { select(selectBox.value, true); });
 
     function load(code, done) {
       if (I18N[code]) return done(true);
@@ -238,9 +236,8 @@
       document.head.appendChild(s);
     }
 
-    var current = null;
     function select(code, save) {
-      if (!buttons[code]) code = "ja";
+      if (!options[code]) code = "ja";
       policy.setAttribute("aria-busy", "true");
       load(code, function (ok) {
         policy.removeAttribute("aria-busy");
@@ -249,11 +246,9 @@
         policy.innerHTML = t.html;
         document.title = t.title;
         document.documentElement.lang = code;
-        if (current) buttons[current].setAttribute("aria-pressed", "false");
-        buttons[code].setAttribute("aria-pressed", "true");
-        current = code;
+        selectBox.value = code;
         if (save) {
-          try { localStorage.setItem("privacyLang", code); } catch (e) {}
+          try { localStorage.setItem("siteLang", code); } catch (e) {}
           try {
             var url = new URL(location.href);
             if (code === "ja") url.searchParams.delete("lang");
@@ -267,8 +262,9 @@
     // ?lang=en のような URL 指定、前回選んだ言語の順に使う。なければ日本語のまま
     var initial = null;
     try { initial = new URLSearchParams(location.search).get("lang"); } catch (e) {}
-    if (!initial) { try { initial = localStorage.getItem("privacyLang"); } catch (e) {} }
-    select(initial && buttons[initial] ? initial : "ja", false);
+    // 言語の記憶はアプリ紹介ページと共通（siteLang）
+    if (!initial) { try { initial = localStorage.getItem("siteLang") || localStorage.getItem("privacyLang"); } catch (e) {} }
+    select(initial && options[initial] ? initial : "ja", false);
   })();
   </script>
 </body>

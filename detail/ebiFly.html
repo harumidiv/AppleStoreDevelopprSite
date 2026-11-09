@@ -350,7 +350,7 @@
     @media (max-width: 860px) {
       .hero-grid, .sky-panel { grid-template-columns: 1fr; }
       .hero-visual { min-height: 0; height: min(118vw, 560px); max-width: 460px; width: 100%; margin: 0 auto; }
-      .nav-links { display: none; }
+      .nav-links > a { display: none; }
       .statbar { grid-template-columns: 1fr; margin-top: -30px; }
       .download-cta { grid-template-columns: 1fr; text-align: center; justify-items: center; }
     }
@@ -369,6 +369,7 @@
       .button { transition: none; }
     }
   </style>
+  <script src="../site-i18n/lang.js" data-page="ebiFly" defer></script>
 </head>
 <body>
   <header class="hero">
@@ -383,6 +384,7 @@
     <nav class="topbar wrap" aria-label="ページ内ナビゲーション">
       <a class="back" href="../index.html"><span aria-hidden="true">←</span> アプリ一覧へ</a>
       <div class="nav-links">
+        <span data-lang-slot></span>
         <a href="#flow">あそびかた</a>
         <a href="#sky">空のエリア</a>
         <a href="#features">特徴</a>

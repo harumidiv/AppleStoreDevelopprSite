@@ -215,6 +215,8 @@
   footer a { text-underline-offset: 4px; }
   footer small { color: var(--muted); }
 
+  .lang-bar { display: flex; justify-content: flex-end; padding-top: 16px; }
+
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; }
     .featured { grid-template-columns: 1fr; }
@@ -232,27 +234,29 @@
     .stickers a { animation: none; transition: none; }
   }
 </style>
+<script src="site-i18n/lang.js" data-page="index" data-mode="dict" defer></script>
 </head>
 <body>
+<div class="wrap lang-bar"><span data-lang-slot></span></div>
 <header class="hero wrap">
   <div>
-    <h1>野生の<br>プログラマZ</h1>
-    <p id="intro">ひとりで作っているiPhone・iPadアプリ。写真で遊ぶゲームから、勉強・読書・ちょっと便利な道具まで。</p>
+    <h1 data-i18n="heroTitle">野生の<br>プログラマZ</h1>
+    <p id="intro" data-i18n="intro">ひとりで作っているiPhone・iPadアプリ。写真で遊ぶゲームから、勉強・読書・ちょっと便利な道具まで。</p>
     <div class="hero-links">
-      <a class="pill primary" href="#apps">アプリを見る</a>
-      <a class="pill" href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDMで問い合わせ</a>
+      <a class="pill primary" href="#apps" data-i18n="seeApps">アプリを見る</a>
+      <a class="pill" href="https://twitter.com/u11238123" target="_blank" rel="noopener" data-i18n="contactHero">TwitterのDMで問い合わせ</a>
     </div>
   </div>
-  <div class="stickers" id="stickers" aria-label="アプリのアイコン一覧"></div>
+  <div class="stickers" id="stickers" data-i18n-aria="stickers" aria-label="アプリのアイコン一覧"></div>
 </header>
 
 <div class="filters">
-  <div class="wrap filter-row" id="filters" role="group" aria-label="カテゴリで絞り込む"></div>
+  <div class="wrap filter-row" id="filters" role="group" data-i18n-aria="filters" aria-label="カテゴリで絞り込む"></div>
 </div>
 
 <main class="wrap" id="apps">
   <section class="block" id="newBlock">
-    <h2>新しいアプリ</h2>
+    <h2 data-i18n="newApps">新しいアプリ</h2>
     <div class="featured" id="featured"></div>
   </section>
   <section class="block">
@@ -264,10 +268,10 @@
 <footer>
   <div class="wrap footer-row">
     <nav>
-      <a href="https://twitter.com/u11238123" target="_blank" rel="noopener">お問い合わせ（TwitterのDM）</a>
-      <a href="privacy.html" target="_blank">プライバシーポリシー</a>
+      <a href="https://twitter.com/u11238123" target="_blank" rel="noopener" data-i18n="contactFooter">お問い合わせ（TwitterのDM）</a>
+      <a href="privacy.html" target="_blank" data-i18n="privacy">プライバシーポリシー</a>
     </nav>
-    <small>このページは App Store のデベロッパーページをもとに作成されています。</small>
+    <small data-i18n="footerNote">このページは App Store のデベロッパーページをもとに作成されています。</small>
   </div>
 </footer>
 
@@ -311,40 +315,60 @@ function el(tag, props = {}, children = []) {
   return node;
 }
 
+// 表示中の言語の翻訳（日本語のときは null）。site-i18n/index/<言語>.js から lang.js が読み込む
+let t = null;
+const nameOf = app => (t && t.apps[app.name] && t.apps[app.name].name) || app.name;
+const descOf = app => (t && t.apps[app.name] && t.apps[app.name].desc) || app.desc;
+const categoryOf = name => (t && t.categories[name]) || name;
+const ui = (key, vars = {}) => {
+  const ja = { detail:'詳細を見る', all:'すべて', allApps:'すべてのアプリ', categoryApps:'{c}のアプリ', count:'{n}本' };
+  // 英語の "1 app" のように、1のときだけ形が変わる言語は count_one を使う
+  if (t && vars.n === 1 && t.ui[key + '_one']) key += '_one';
+  return ((t && t.ui[key]) || ja[key]).replace(/\{(\w)\}/g, (_, k) => vars[k]);
+};
+
 function buttons(app) {
-  const detail = el('a', { className:'btn', href:app.page, textContent:'詳細を見る' });
+  const detail = el('a', { className:'btn', href:app.page, textContent:ui('detail') });
   const store = el('a', { className:'btn store', href:app.url, target:'_blank', rel:'noopener', textContent:'App Store' });
   return el('div', { className:'buttons' }, [detail, store]);
 }
 
 function category(app) {
-  const badge = el('span', { className:'category', textContent:app.category });
+  const badge = el('span', { className:'category', textContent:categoryOf(app.category) });
   badge.style.setProperty('--tint', tintOf(app));
   return badge;
 }
 
-// ヒーローのステッカー
+// ヒーローのステッカー（作るのは1回だけ。言語が変わったら名前だけ差し替える）
 const stickers = document.getElementById('stickers');
 apps.forEach((app, i) => {
-  const link = el('a', { href:app.page, title:app.name }, [el('img', { src:app.image, alt:app.name, width:120, height:120 })]);
+  const link = el('a', { href:app.page }, [el('img', { src:app.image, width:120, height:120 })]);
   link.style.setProperty('--tilt', tilts[i % tilts.length] + 'deg');
   link.style.setProperty('--i', i);
   stickers.append(link);
 });
+function renderStickers() {
+  [...stickers.children].forEach((link, i) => {
+    link.title = nameOf(apps[i]);
+    link.querySelector('img').alt = nameOf(apps[i]);
+  });
+}
 
 // 新しいアプリ
 const featured = document.getElementById('featured');
-apps.slice(0, 3).forEach(app => {
-  const top = el('div', { className:'feature-top' }, [el('img', { src:app.image, alt:'', width:112, height:112 })]);
-  top.style.setProperty('--tint', tintOf(app));
-  const body = el('div', { className:'feature-body' }, [
-    category(app),
-    el('h3', { textContent:app.name }),
-    el('p', { textContent:app.desc }),
-    buttons(app)
-  ]);
-  featured.append(el('article', { className:'feature' }, [top, body]));
-});
+function renderFeatured() {
+  featured.replaceChildren(...apps.slice(0, 3).map(app => {
+    const top = el('div', { className:'feature-top' }, [el('img', { src:app.image, alt:'', width:112, height:112 })]);
+    top.style.setProperty('--tint', tintOf(app));
+    const body = el('div', { className:'feature-body' }, [
+      category(app),
+      el('h3', { textContent:nameOf(app) }),
+      el('p', { textContent:descOf(app) }),
+      buttons(app)
+    ]);
+    return el('article', { className:'feature' }, [top, body]);
+  }));
+}
 
 // すべてのアプリ（カテゴリで絞り込み）
 const grid = document.getElementById('appsGrid');
@@ -354,28 +378,45 @@ const newBlock = document.getElementById('newBlock');
 function render(selected) {
   const list = selected ? apps.filter(app => app.category === selected) : apps;
   newBlock.hidden = Boolean(selected);
-  allHeading.replaceChildren(selected ? selected + 'のアプリ' : 'すべてのアプリ', el('small', { textContent:list.length + '本' }));
+  allHeading.replaceChildren(selected ? ui('categoryApps', { c:categoryOf(selected) }) : ui('allApps'), el('small', { textContent:ui('count', { n:list.length }) }));
   grid.replaceChildren(...list.map(app => el('article', { className:'card' }, [
     el('img', { src:app.image, alt:'', width:76, height:76, loading:'lazy' }),
-    el('div', {}, [category(app), el('h3', { textContent:app.name }), el('p', { textContent:app.desc })]),
+    el('div', {}, [category(app), el('h3', { textContent:nameOf(app) }), el('p', { textContent:descOf(app) })]),
     buttons(app)
   ])));
 }
 
 const filters = document.getElementById('filters');
 const counts = apps.reduce((map, app) => map.set(app.category, (map.get(app.category) || 0) + 1), new Map());
-const options = [[null, 'すべて', apps.length], ...[...counts].sort((a, b) => b[1] - a[1]).map(([name, n]) => [name, name, n])];
-options.forEach(([value, label, n]) => {
-  const chip = el('button', { type:'button', className:'chip' }, [label, el('span', { textContent:n })]);
-  chip.setAttribute('aria-pressed', String(value === null));
-  chip.addEventListener('click', () => {
-    filters.querySelectorAll('.chip').forEach(other => other.setAttribute('aria-pressed', String(other === chip)));
-    render(value);
-  });
-  filters.append(chip);
-});
+const options = [null, ...[...counts].sort((a, b) => b[1] - a[1]).map(([name]) => name)];
+let selected = null;
+function renderFilters() {
+  filters.replaceChildren(...options.map(value => {
+    const n = value === null ? apps.length : counts.get(value);
+    const chip = el('button', { type:'button', className:'chip' }, [value === null ? ui('all') : categoryOf(value), el('span', { textContent:n })]);
+    chip.setAttribute('aria-pressed', String(value === selected));
+    chip.addEventListener('click', () => {
+      selected = value;
+      filters.querySelectorAll('.chip').forEach(other => other.setAttribute('aria-pressed', String(other === chip)));
+      render(value);
+    });
+    return chip;
+  }));
+}
 
-render(null);
+function renderAll() {
+  renderStickers();
+  renderFeatured();
+  renderFilters();
+  render(selected);
+}
+renderAll();
+
+// 言語が切り替わったら描き直す
+document.addEventListener('sitelangchange', e => {
+  t = e.detail.t;
+  renderAll();
+});
 </script>
 </body>
 </html>

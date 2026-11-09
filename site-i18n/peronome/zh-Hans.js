@@ -1,0 +1,62 @@
+window.SITE_I18N = window.SITE_I18N || {};
+(window.SITE_I18N["peronome"] = window.SITE_I18N["peronome"] || {})["zh-Hans"] = {
+  title: "Peronome - 支持",
+  description: "Peronome 是一款用舔糖果的可爱动作来表现摆锤摆动的节拍器应用，让音乐练习更有趣。",
+  html: `
+
+  <header>
+
+    <div data-lang-slot style="display:flex;justify-content:flex-end;margin:-40px -4px 20px;"></div>
+    <h1>Peronome</h1>
+    <p>让你的音乐练习更有趣的节拍器</p>
+  </header>
+
+  <main class="container">
+
+    <section class="section">
+      <h2>关于应用</h2>
+      <div class="media-card">
+        <img src="../image/icon/peronome.png" alt="应用图标" />
+        <div>
+          <p>“Peronome”是一款节拍器应用，用舔糖果的可爱动作来表现摆锤的摆动。</p>
+          <p>我们希望让音乐练习变得更有趣、更亲近。操作简单直观，任何人都能轻松上手。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>应用功能</h2>
+      <p>操作简单，马上就能使用节拍器。</p>
+      <div class="screenshots-group">
+        <img src="../image/peronome/0.png" alt="应用界面 1" class="screenshot" />
+      </div>
+    </section>
+    
+    <section class="section">
+      <h2>联系我们</h2>
+      <p>如有关于应用的意见、需求或问题反馈，欢迎随时联系我们。</p>
+      <div class="btn-group">
+        <a href="https://twitter.com/u11238123" target="_blank" rel="noopener" class="btn">通过 Twitter 联系</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>隐私政策</h2>
+      <p>“Peronome”尊重用户的隐私。</p>
+      <p>本应用不会收集任何可识别个人身份的信息。详情请查看以下内容。</p>
+      <div class="btn-group">
+        <a href="../privacy.html" class="btn">阅读隐私政策</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Harumi Sagawa — Apps</p>
+    <p>
+        <a href="../index.html">返回首页</a>
+    </p>
+  </footer>
+
+`
+};
