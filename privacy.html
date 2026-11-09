@@ -44,10 +44,50 @@
       color: #6b7280;
       margin-top: 2rem;
     }
+    .lang-switch {
+      margin: 0 0 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .lang-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .lang-buttons button {
+      font: inherit;
+      font-size: 0.85rem;
+      line-height: 1.2;
+      padding: 6px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+    }
+    .lang-buttons button:hover {
+      background: #f3f4f6;
+    }
+    .lang-buttons button[aria-pressed="true"] {
+      background: #1f2937;
+      border-color: #1f2937;
+      color: #fff;
+    }
+    .lang-buttons button:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
+    #policy[aria-busy="true"] {
+      opacity: .5;
+    }
   </style>
 </head>
 <body>
   <main>
+    <nav class="lang-switch" aria-label="Language">
+      <div class="lang-buttons" id="langButtons"></div>
+    </nav>
+    <div id="policy">
     <h1>プライバシーポリシー</h1>
     <p>
       Harumi Sagawa（以下「当方」）が公開しているアプリ（以下「本アプリ」）における、ユーザーの情報の取扱いについて定めます。本ポリシーは当方のすべてのアプリに共通で適用されます。
@@ -128,9 +168,108 @@
     <p>
       プライバシーに関するお問い合わせは、<a href="https://twitter.com/u11238123" target="_blank" rel="noopener">TwitterのDM</a> にて受け付けています。
     </p>
+    </div>
     <footer>
       &copy; 2026 Harumi Sagawa
     </footer>
   </main>
+  <script>
+  (function () {
+    // ボタンの並び順と、各言語の表示名（その言語での名前）
+    var LANGS = [
+      ["ja", "日本語"],
+      ["en", "English"],
+      ["zh-Hans", "简体中文"],
+      ["zh-Hant", "繁體中文"],
+      ["ko", "한국어"],
+      ["fr", "Français"],
+      ["de", "Deutsch"],
+      ["es", "Español"],
+      ["it", "Italiano"],
+      ["pt-BR", "Português (Brasil)"],
+      ["pt-PT", "Português (Portugal)"],
+      ["ru", "Русский"],
+      ["uk", "Українська"],
+      ["pl", "Polski"],
+      ["nl", "Nederlands"],
+      ["sv", "Svenska"],
+      ["da", "Dansk"],
+      ["nb", "Norsk"],
+      ["fi", "Suomi"],
+      ["tr", "Türkçe"],
+      ["cs", "Čeština"],
+      ["sk", "Slovenčina"],
+      ["hu", "Magyar"],
+      ["ro", "Română"],
+      ["el", "Ελληνικά"],
+      ["hr", "Hrvatski"],
+      ["ca", "Català"],
+      ["vi", "Tiếng Việt"],
+      ["th", "ไทย"],
+      ["id", "Bahasa Indonesia"],
+      ["ms", "Bahasa Melayu"],
+      ["hi", "हिन्दी"]
+    ];
+
+    // 翻訳は privacy-i18n/<言語コード>.js にあり、選ばれたときに読み込む
+    var I18N = window.PRIVACY_I18N = window.PRIVACY_I18N || {};
+    var policy = document.getElementById("policy");
+    var buttonsBox = document.getElementById("langButtons");
+    I18N.ja = { title: document.title, html: policy.innerHTML };
+
+    var buttons = {};
+    LANGS.forEach(function (l) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.lang = l[0];
+      b.textContent = l[1];
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () { select(l[0], true); });
+      buttons[l[0]] = b;
+      buttonsBox.appendChild(b);
+    });
+
+    function load(code, done) {
+      if (I18N[code]) return done(true);
+      var s = document.createElement("script");
+      s.src = "privacy-i18n/" + code + ".js";
+      s.onload = function () { done(!!I18N[code]); };
+      s.onerror = function () { done(false); };
+      document.head.appendChild(s);
+    }
+
+    var current = null;
+    function select(code, save) {
+      if (!buttons[code]) code = "ja";
+      policy.setAttribute("aria-busy", "true");
+      load(code, function (ok) {
+        policy.removeAttribute("aria-busy");
+        if (!ok) code = "ja";
+        var t = I18N[code];
+        policy.innerHTML = t.html;
+        document.title = t.title;
+        document.documentElement.lang = code;
+        if (current) buttons[current].setAttribute("aria-pressed", "false");
+        buttons[code].setAttribute("aria-pressed", "true");
+        current = code;
+        if (save) {
+          try { localStorage.setItem("privacyLang", code); } catch (e) {}
+          try {
+            var url = new URL(location.href);
+            if (code === "ja") url.searchParams.delete("lang");
+            else url.searchParams.set("lang", code);
+            history.replaceState(null, "", url);
+          } catch (e) {}
+        }
+      });
+    }
+
+    // ?lang=en のような URL 指定、前回選んだ言語の順に使う。なければ日本語のまま
+    var initial = null;
+    try { initial = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    if (!initial) { try { initial = localStorage.getItem("privacyLang"); } catch (e) {} }
+    select(initial && buttons[initial] ? initial : "ja", false);
+  })();
+  </script>
 </body>
 </html>
